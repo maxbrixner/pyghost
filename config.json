@@ -1,0 +1,26 @@
+{
+    "matchers": [
+        {
+            "name": "PersonMatcher",
+            "module": "pyghost.matchers",
+            "cls": "BaseMatcher",
+            "config": {
+                "test": "test"
+            }
+        },
+        {
+            "name": "EmailMatcher",
+            "module": "pyghost.matchers",
+            "cls": "RegexMatcher",
+            "config": {
+                "patterns": [
+                    "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}",
+                    {
+                        "pattern": "Email:[ ]{0,}([A-Za-z0-9._%+-@]*)",
+                        "group": 1
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -1,0 +1,2 @@
+class BaseTransformer():
+    pass
