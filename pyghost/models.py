@@ -14,16 +14,20 @@ class MatcherConfig(pydantic.BaseModel):
     name: str
     module: str
     cls: str
+    active: bool = True
     config: dict[Any, Any] = {}
 
 
-class EntityConfig(pydantic.BaseModel):
+class TransformerConfig(pydantic.BaseModel):
     name: str
+    module: str
+    cls: str
     active: bool = True
-    matcher: MatcherConfig
+    config: dict[Any, Any] = {}
 
 
 class Config(pydantic.BaseModel):
     matchers: List[MatcherConfig] = []
+    transformers: List[TransformerConfig] = []
 
 # ---------------------------------------------------------------------------- #

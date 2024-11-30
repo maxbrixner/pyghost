@@ -14,15 +14,20 @@ class Match(pydantic.BaseModel):
     label: Optional[str] = None  # set by pseudomizer
 
     text: str
-    context: Optional[str] = None
     start: int
     end: int
+
+    context: Optional[str] = None
+    source_labels: Optional[List[str]] = None
 
 # ---------------------------------------------------------------------------- #
 
 
 class BaseMatcher():
-
+    """
+    All matchers inherit from the BaseMatcher class. It provides basic config
+    management and the interface to the pseudomizer.
+    """
     class MatcherConfig(pydantic.BaseModel):
         """
         Use this pydantic model to define your matcher's config
@@ -38,7 +43,7 @@ class BaseMatcher():
         config: dict[Any, Any]
     ):
         """
-        Initialize the matcher and assign the matcher's configuration.
+        Initialize the matcher and assign the configuration.
         """
         self.config = self.MatcherConfig(**config)
         self.logger = logging.getLogger("pyghost.matchers")

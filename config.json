@@ -1,17 +1,89 @@
 {
     "matchers": [
         {
-            "name": "PersonMatcher",
+            "name": "PersonMatcherEN",
+            "label": "person",
             "module": "pyghost.matchers",
-            "cls": "BaseMatcher",
+            "cls": "SpacyMatcher",
+            "active": true,
             "config": {
-                "test": "test"
+                "model": "en_core_web_sm",
+                "labels": [
+                    "PERSON"
+                ]
+            }
+        },
+        {
+            "name": "PersonMatcherDE",
+            "label": "person",
+            "module": "pyghost.matchers",
+            "cls": "SpacyMatcher",
+            "active": true,
+            "config": {
+                "model": "de_core_news_sm",
+                "labels": [
+                    "PER"
+                ]
+            }
+        },
+        {
+            "name": "OrgMatcherEN",
+            "label": "organization",
+            "module": "pyghost.matchers",
+            "cls": "SpacyMatcher",
+            "active": true,
+            "config": {
+                "model": "en_core_web_sm",
+                "labels": [
+                    "ORG"
+                ]
+            }
+        },
+        {
+            "name": "OrgMatcherDE",
+            "label": "organization",
+            "module": "pyghost.matchers",
+            "cls": "SpacyMatcher",
+            "active": true,
+            "config": {
+                "model": "de_core_news_sm",
+                "labels": [
+                    "ORG"
+                ]
+            }
+        },
+        {
+            "name": "LocationMatcherEN",
+            "label": "location",
+            "module": "pyghost.matchers",
+            "cls": "SpacyMatcher",
+            "active": true,
+            "config": {
+                "model": "en_core_web_sm",
+                "labels": [
+                    "LOC"
+                ]
+            }
+        },
+        {
+            "name": "LocationMatcherDE",
+            "label": "location",
+            "module": "pyghost.matchers",
+            "cls": "SpacyMatcher",
+            "active": true,
+            "config": {
+                "model": "de_core_news_sm",
+                "labels": [
+                    "LOC"
+                ]
             }
         },
         {
             "name": "EmailMatcher",
+            "label": "email",
             "module": "pyghost.matchers",
             "cls": "RegexMatcher",
+            "active": true,
             "config": {
                 "patterns": [
                     "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}",
@@ -20,6 +92,18 @@
                         "group": 1
                     }
                 ]
+            }
+        }
+    ],
+    "transformers": [
+        {
+            "name": "LabelTransformer",
+            "module": "pyghost.transformers",
+            "cls": "LabelTransformer",
+            "active": true,
+            "config": {
+                "prefix": "<",
+                "suffix": ">"
             }
         }
     ]

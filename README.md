@@ -25,11 +25,11 @@ python -m pyghost --help
 The most simple way to use pyghost is to enter text directly.
 
 ```bash
-python -m pyghost text "My email is john.doe@example.com"
+python -m pyghost text "My name is John Doe, I am from Dublin, I work for Allianz, and my email is john.doe@example.com"
 ```
 
 To show what pyghost is doing, you can show debug information.
 
 ```bash
-python -m pyghost text "My email is john.doe@example.com" --log DEBUG
+python -m pyghost text "My name is John Doe, I am from Dublin, I work for Allianz, and my email is john.doe@example.com" --log DEBUG
 ```

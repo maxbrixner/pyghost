@@ -20,7 +20,9 @@ class PatternConfig(pydantic.BaseModel):
 
 
 class RegexMatcher(BaseMatcher):
-
+    """
+    The RegexMatcher uses regular expressions to identify entities.
+    """
     class MatcherConfig(pydantic.BaseModel):
         patterns: List[str | PatternConfig] = []
         patterns_file: Optional[str] = None  # todo
@@ -31,6 +33,9 @@ class RegexMatcher(BaseMatcher):
         self,
         config: dict[Any, Any]
     ) -> None:
+        """
+        Initialize the RegexMatcher.
+        """
         super().__init__(config=config)
 
         self._compile_patterns()
@@ -39,7 +44,8 @@ class RegexMatcher(BaseMatcher):
         """
         Precompile regex patterns for faster processing.
         """
-        self.logger.debug("Compiling regex patterns...")
+        self.logger.debug(
+            f"Compiling {len(self.config.patterns)} regex patterns.")
 
         self.compiled_patterns = []
         for pattern in self.config.patterns:
