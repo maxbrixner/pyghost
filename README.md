@@ -1,3 +1,5 @@
+>  **_WARNING_** This software uses various techniques to replace personal data with pseudonyms or dummy data. However, anonymization and pseudonymization are not foolproof and may not prevent re-identification of individuals. The effectiveness of the software depends on various factors, including the completeness and quality of your configuration, the quality of the source data, and the technical sophistication of potential attackers. We cannot guarantee the complete anonymity or confidentiality of your data using this software. It is your responsibility to assess the risks associated with anonymization or pseudonymization and to take appropriate measures to protect your privacy and the privacy of others.
+
 # pyghost
 
 A simple library and cli tool to pseudonymize and anonymize documents. Pyghost offers
@@ -7,8 +9,6 @@ A simple library and cli tool to pseudonymize and anonymize documents. Pyghost o
 - Importing from and exporting to AWS S3.
 - Text-based anonymization and pseudonymization.
 - Replacing text directly in documents using AWS Textract and Pillow.
-
->  **_WARNING_** This software uses various techniques to replace personal data with pseudonyms or dummy data. However, anonymization and pseudonymization are not foolproof and may not prevent re-identification of individuals. The effectiveness of the software depends on various factors, including the completeness and quality of your configuration, the quality of the source data, and the technical sophistication of potential attackers. We cannot guarantee the complete anonymity or confidentiality of your data using this software. It is your responsibility to assess the risks associated with anonymization or pseudonymization and to take appropriate measures to protect your privacy and the privacy of others.
 
 ## 1. Installation
 
@@ -24,7 +24,15 @@ If pyghost is not available via pip, you can also install it from a local folder
 pip install ../pyghost
 ```
 
-## 2. Use Pyghost as a CLI
+If you plan to use Spacy matchers, you need to install the respective models, e.g.
+
+```bash
+python -m spacy download en_core_web_sm
+python -m spacy download de_core_news_sm
+...
+```
+
+## 2. Use pyghost as a CLI
 
 The pyghost CLI offers three commands:
 
@@ -76,6 +84,6 @@ todo
 
 todo
 
-## 3. Use Pyghost as a Library
+## 3. Use pyghost as a Library
 
 todo

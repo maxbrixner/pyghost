@@ -30,10 +30,31 @@ class LabelTransformer(BaseTransformer):
         """
         Overwrite this method to implement your transformer's processing.
         """
-        merged_matches = self.merge_overlapping_matches(matches)
+        # merged_matches = self.merge_overlapping_matches(matches)
 
+        transformations = self.create_transformations(matches=matches)
+
+        transformed_text = self.apply_transformations(
+            text=text,
+            transformations=transformations
+        )
+
+        return TransformerResult(
+            source_text=text,
+            transformed_text=transformed_text,
+            transformations=transformations
+        )
+
+    def create_transformations(
+        self,
+        matches: List[Match]
+    ) -> List[Transformation]:
+        """
+        Create transformations by replacing matches with their respective
+        labels.
+        """
         transformations = []
-        for match in merged_matches:
+        for match in matches:
             transformations.append(
                 Transformation(
                     match=match,
@@ -43,8 +64,4 @@ class LabelTransformer(BaseTransformer):
                 )
             )
 
-        return TransformerResult(
-            source_text=text,
-            transformed_text=text,
-            transformations=transformations
-        )
+        return transformations

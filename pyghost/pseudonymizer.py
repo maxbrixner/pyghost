@@ -43,7 +43,7 @@ class Pseudonymizer():
         self._initialize_matchers()
         self._initialize_transformers()
 
-    def process(self, text: str) -> List[Match]:
+    def process(self, text: str) -> TransformerResult:
         """
         Process a text, i.e. find matches and transform them.
         """

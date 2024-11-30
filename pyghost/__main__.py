@@ -62,7 +62,7 @@ def text(
 
     result = pseudonymizer.process(text=text)
 
-    print(result)
+    print(result.transformed_text)
 
 # ---------------------------------------------------------------------------- #
 

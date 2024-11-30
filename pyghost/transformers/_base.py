@@ -57,8 +57,6 @@ class BaseTransformer():
         """
         Overwrite this method to implement your transformer's processing.
         """
-        self.merge_overlapping_matches(matches=matches)
-
         return TransformerResult(
             source_text=text,
             transformed_text=text,
@@ -112,15 +110,79 @@ class BaseTransformer():
         return merged
 
     def apply_transformations(
+        self,
         text: str,
         transformations: List[Transformation]
-    ) -> None:
+    ) -> str:
         """
-        This only works if matches are disjoint!!! todo
+        todo
         """
-        transformations.sort(key=lambda x: x.match.start)
+
+        # the trafo matrix says: for every letter from the original text: where is it now?
+        trafo_matrix = dict(
+            zip(range(0, len(text)+1), range(0, len(text)+1))
+        )
+
+        old_text = text
 
         for transformation in transformations:
-            pass
+
+            text_orig = transformation.match.text
+            start_orig = transformation.match.start
+            end_orig = transformation.match.end
+            len_orig = len(text_orig)
+            start_orig_tf = trafo_matrix[transformation.match.start]
+            end_orig_tf = trafo_matrix[transformation.match.end]
+
+            text_new = transformation.replacement
+            len_new = len(text_new)
+
+            # print("text_orig", text_orig)
+            # print("text_new", text_new)
+            # print("start_orig", start_orig)
+            # print("end_orig", end_orig)
+            # print("len_orig", len_orig)
+            # print("start_orig_tf", start_orig_tf)
+            # print("end_orig_tf", end_orig_tf)
+            # print("len_new", len_new)
+
+            if start_orig_tf is None or end_orig_tf is None:
+                self.logger.warning(
+                    "Trying to manipulate already replaced text1")
+                print("")
+                continue
+
+            abort = False
+            for pos in range(start_orig, end_orig):
+                if trafo_matrix[pos] is None:
+                    self.logger.warning(
+                        "Trying to manipulate already replaced text2")
+                    abort = True
+                    break
+
+            if abort:
+                # print("")
+                continue
+
+            before = text[0:start_orig_tf]
+            after = text[end_orig_tf:]
+            text = before + text_new + after
+
+            # print(text)
+            # print(old_text)
+
+            for pos_orig, pos_new in trafo_matrix.items():
+                if pos_orig >= start_orig_tf and pos_orig < end_orig_tf:
+                    trafo_matrix[pos_orig] = None
+
+                if pos_orig >= end_orig_tf:
+                    if trafo_matrix[pos_orig] is not None:
+                        trafo_matrix[pos_orig] += (len_new - len_orig)
+
+            # print(trafo_matrix)
+
+            # print("")
+
+        return text
 
 # ---------------------------------------------------------------------------- #

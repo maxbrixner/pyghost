@@ -77,8 +77,8 @@ class SpacyMatcher(BaseMatcher):
                 Match(
                     label=self.label,
                     text=entity.text,
-                    start=entity.start,
-                    end=entity.end,
+                    start=entity.start_char,
+                    end=entity.end_char,
                     source_labels=[entity.label_]
                 )
             )
