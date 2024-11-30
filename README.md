@@ -8,6 +8,8 @@ A simple library and cli tool to pseudonymize and anonymize documents. Pyghost o
 - Text-based anonymization and pseudonymization.
 - Replacing text directly in documents using AWS Textract and Pillow.
 
+>  **_WARNING_** This software uses various techniques to replace personal data with pseudonyms or dummy data. However, anonymization and pseudonymization are not foolproof and may not prevent re-identification of individuals. The effectiveness of the software depends on various factors, including the completeness and quality of your configuration, the quality of the source data, and the technical sophistication of potential attackers. We cannot guarantee the complete anonymity or confidentiality of your data using this software. It is your responsibility to assess the risks associated with anonymization or pseudonymization and to take appropriate measures to protect your privacy and the privacy of others.
+
 ## 1. Installation
 
 To install pyghost, you can use pip.
