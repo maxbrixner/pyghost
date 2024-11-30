@@ -4,19 +4,18 @@ import pathlib
 import json
 import logging
 import importlib
-from typing import List
+from typing import List, Optional
 
 # ---------------------------------------------------------------------------- #
 
 from .models import Config
-from .matchers import BaseMatcher
-from .transformers import BaseTransformer
-from .matchers import Match
+from .matchers import BaseMatcher, Match
+from .transformers import BaseTransformer, TransformerResult
 
 # ---------------------------------------------------------------------------- #
 
 
-class Pseudomizer():
+class Pseudonymizer():
     """
     The Pseudomizer processes a text by using the configured matchers to
     find entities and the configures transformers to transform those
@@ -30,12 +29,12 @@ class Pseudomizer():
 
     def __init__(
         self,
-        configfile: pathlib.Path = pathlib.Path("config.json")
+        config: Optional[pathlib.Path] = None
     ):
         """
         Initialize the Pseudomizer.
         """
-        self._config = self._load_config(configfile=configfile)
+        self._config = self._load_config(configfile=config)
         self._logger = logging.getLogger("pyghost")
 
         self._matchers = {}
@@ -53,41 +52,55 @@ class Pseudomizer():
             self._logger.debug(f"Processing matcher '{name}'.")
 
             new_matches = matcher.process(text=text)
-            for match in new_matches:
-                match.label = name
             matches += new_matches
 
             self._logger.debug(f"Found {len(new_matches)} matches.")
 
-        # self._export_matches(matches, pathlib.Path("test_match_export.json"))
-
         for name, transformer in self._transformers.items():
             self._logger.debug(f"Processing transformer '{name}'.")
 
-            transformer.process(text=text, matches=matches)
+            result = transformer.process(text=text, matches=matches)
 
-        return matches
+        self._export_result(
+            result=result,
+            filename=pathlib.Path("test_export.json")
+        )
 
-    def _export_matches(
+        return result
+
+    def _export_result(
         self,
-        matches: List[Match],
+        result: TransformerResult,
         filename: pathlib.Path
     ) -> None:
         """
         Save all matches to a json file.
         """
         with filename.open("w") as file:
-            content = [match.dict() for match in matches]
+            content = result.dict()
             json.dump(content, file, indent=4)
 
-    def _load_config(self, configfile: pathlib.Path) -> Config:
+    def _load_config(
+        self,
+        configfile: Optional[pathlib.Path] = None
+    ) -> Config:
         """
         Load the configuration from a config file.
         """
-        with configfile.open("r") as file:
-            content = json.load(file)
+        if not configfile:
+            configfile = pathlib.Path(__file__).parent / \
+                pathlib.Path("../config/default.json")
 
-        return Config(**content)
+        try:
+            with configfile.open("r") as file:
+                content = json.load(file)
+
+            return Config(**content)
+        except:
+            raise Exception(
+                f"Unable to read the configuration at {configfile}. "
+                f"You can specify another location with the --config "
+                f"parameter.")
 
     def _initialize_matchers(self) -> None:
         """
@@ -109,7 +122,8 @@ class Pseudomizer():
 
             module = importlib.import_module(matcher.module)
             cls = getattr(module, matcher.cls)
-            self._matchers[matcher.name] = cls(config=matcher.config)
+            self._matchers[matcher.name] = cls(
+                label=matcher.label, config=matcher.config)
 
     def _initialize_transformers(self) -> None:
         """

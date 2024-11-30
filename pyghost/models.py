@@ -12,6 +12,7 @@ class TransformerConfig(pydantic.BaseModel):
 
 class MatcherConfig(pydantic.BaseModel):
     name: str
+    label: str
     module: str
     cls: str
     active: bool = True

@@ -31,12 +31,13 @@ class RegexMatcher(BaseMatcher):
 
     def __init__(
         self,
+        label: str,
         config: dict[Any, Any]
     ) -> None:
         """
         Initialize the RegexMatcher.
         """
-        super().__init__(config=config)
+        super().__init__(label=label, config=config)
 
         self._compile_patterns()
 
@@ -81,6 +82,7 @@ class RegexMatcher(BaseMatcher):
 
             result.append(
                 Match(
+                    label=self.label,
                     text=text,
                     context=match.group(0),
                     start=match.start(),

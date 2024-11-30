@@ -11,8 +11,7 @@ class Match(pydantic.BaseModel):
     """
     This should not be overwritten or extended.
     """
-    label: Optional[str] = None  # set by pseudomizer
-
+    label: str
     text: str
     start: int
     end: int
@@ -37,9 +36,11 @@ class BaseMatcher():
 
     config: MatcherConfig
     logger: logging.Logger
+    label: str
 
     def __init__(
         self,
+        label: str,
         config: dict[Any, Any]
     ):
         """
@@ -47,6 +48,7 @@ class BaseMatcher():
         """
         self.config = self.MatcherConfig(**config)
         self.logger = logging.getLogger("pyghost.matchers")
+        self.label = label
 
     def process(self, text: str) -> List[Match]:
         """

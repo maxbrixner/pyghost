@@ -4,10 +4,12 @@ import typer
 import logging
 import enum
 import sys
+import pathlib
+from typing import Optional
 
 # ---------------------------------------------------------------------------- #
 
-from .pseudomizer import Pseudomizer
+from .pseudonymizer import Pseudonymizer
 
 # ---------------------------------------------------------------------------- #
 
@@ -48,16 +50,17 @@ def setup_logging(level: LogLevel):
 @app.command()
 def text(
     text: str,
-    log: LogLevel = LogLevel.INFO
-):
+    log: LogLevel = LogLevel.INFO,
+    config: Optional[pathlib.Path] = None
+) -> None:
     """
     Process a text string.
     """
     setup_logging(level=log)
 
-    pseudomizer = Pseudomizer()
+    pseudonymizer = Pseudonymizer(config=config)
 
-    result = pseudomizer.process(text=text)
+    result = pseudonymizer.process(text=text)
 
     print(result)
 
@@ -67,7 +70,7 @@ def text(
 @app.command()
 def doc(
     log: LogLevel = LogLevel.INFO
-):
+) -> None:
     """
     Process a local document (pdf, jpg, png, or tiff).
     """
@@ -79,7 +82,7 @@ def doc(
 @app.command()
 def s3(
     log: LogLevel = LogLevel.INFO
-):
+) -> None:
     """
     Process an AWS S3 document or folder (pdf, jpg, png, or tiff).
     """

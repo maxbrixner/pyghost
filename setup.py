@@ -1,13 +1,24 @@
-import typer
+from setuptools import setup, find_packages
 
-app = typer.Typer()
+package_name = "pyghost"
+version = "0.1.0"
+description = "A simple library and cli tool to pseudonymize and anonymize documents"
+author = "Max Brixner"
+author_email = "max.brixner@allianz.de"
 
-if __name__ == "__main__":
-    command = typer.main.get_command(app)
+# Define dependencies (optional)
+dependencies = [
+    "typer",
+    "spacy",
+    "pydantic"
+]
 
-    try:
-        result = command(standalone_mode=False)
-    except Exception as exception:
-        raise exception
-
-    sys.exit(0)
+setup(
+    name=package_name,
+    version=version,
+    description=description,
+    author=author,
+    author_email=author_email,
+    packages=find_packages(),
+    install_requires=dependencies if dependencies else [],
+)

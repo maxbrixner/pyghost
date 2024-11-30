@@ -7,7 +7,7 @@ from typing import Any, List, Optional
 
 # ---------------------------------------------------------------------------- #
 
-from ._base import BaseTransformer, TransformerResult
+from ._base import BaseTransformer, TransformerResult, Transformation
 from ..matchers import Match
 
 # ---------------------------------------------------------------------------- #
@@ -15,7 +15,8 @@ from ..matchers import Match
 
 class LabelTransformer(BaseTransformer):
     """
-    The label transformer replaces entities by their label.
+    The label transformer replaces entities by their label, e.g. "Dublin" by
+    "<location>".
     """
     class TransformerConfig(pydantic.BaseModel):
         """
@@ -29,11 +30,21 @@ class LabelTransformer(BaseTransformer):
         """
         Overwrite this method to implement your transformer's processing.
         """
-        for match in matches:
-            print(match)
+        merged_matches = self.merge_overlapping_matches(matches)
+
+        transformations = []
+        for match in merged_matches:
+            transformations.append(
+                Transformation(
+                    match=match,
+                    replacement=f"{self.config.prefix}"
+                    f"{match.label}"
+                    f"{self.config.suffix}"
+                )
+            )
 
         return TransformerResult(
             source_text=text,
             transformed_text=text,
-            transformations={}
+            transformations=transformations
         )
