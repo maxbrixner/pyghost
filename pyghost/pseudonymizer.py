@@ -98,7 +98,7 @@ class Pseudonymizer():
             return Config(**content)
         except:
             raise Exception(
-                f"Unable to read the configuration at {configfile}. "
+                f"Unable to read the configuration at '{configfile}'. "
                 f"You can specify another location with the --config "
                 f"parameter.")
 

@@ -2,7 +2,7 @@
     "matchers": [
         {
             "name": "PersonMatcherEN",
-            "label": "per",
+            "label": "person",
             "module": "pyghost.matchers",
             "cls": "SpacyMatcher",
             "active": true,
