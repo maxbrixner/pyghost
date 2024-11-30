@@ -6,7 +6,6 @@ description = "A simple library and cli tool to pseudonymize and anonymize docum
 author = "Max Brixner"
 author_email = "max.brixner@allianz.de"
 
-# Define dependencies (optional)
 dependencies = [
     "typer",
     "spacy",
