@@ -115,7 +115,19 @@ def doc(
     setup_logging(level=log)
     config = load_config(configfile=config)
 
+    ghost = Ghost(config=config)
     document = Document(filename=document, config=config)
+
+    for page, text in enumerate(document.get_text()):
+        result = ghost.process(text=text)
+
+        if export:
+            ghost.export_result(
+                result=result,
+                filename=export
+            )  # todo: page as suffix
+
+        print(result.transformed_text)
 
 # ---------------------------------------------------------------------------- #
 

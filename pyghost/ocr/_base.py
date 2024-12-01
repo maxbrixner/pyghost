@@ -1,16 +1,15 @@
+# ---------------------------------------------------------------------------- #
+
 import pydantic
 import logging
 from PIL import Image
 from typing import Any, List
 
+# ---------------------------------------------------------------------------- #
 
-class Word(pydantic.BaseModel):
-    text: str
-    left: float
-    right: float
-    width: float
-    height: float
-    page: int
+from ..models import OcrResult
+
+# ---------------------------------------------------------------------------- #
 
 
 class BaseOcr():
@@ -29,5 +28,7 @@ class BaseOcr():
         self.config = self.OcrConfig(**config)
         self.logger = logging.getLogger("pyghost.ocr")
 
-    def process_image(self, image: Image.Image) -> List[Word]:
+    def process_image(self, image: Image.Image) -> OcrResult:
         pass
+
+# ---------------------------------------------------------------------------- #

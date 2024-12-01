@@ -6,7 +6,8 @@ from typing import Any, List, Optional
 
 # ---------------------------------------------------------------------------- #
 
-from ._base import BaseMatcher, Match
+from ._base import BaseMatcher
+from ..models import Match
 
 # ---------------------------------------------------------------------------- #
 

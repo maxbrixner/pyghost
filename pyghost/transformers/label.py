@@ -7,8 +7,8 @@ from typing import Any, List, Optional
 
 # ---------------------------------------------------------------------------- #
 
-from ._base import BaseTransformer, TransformerResult, Transformation
-from ..matchers import Match
+from ._base import BaseTransformer
+from ..models import Match, TransformerResult, Transformation
 
 # ---------------------------------------------------------------------------- #
 

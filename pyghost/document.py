@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import Any, List, Optional
 
 from .models import Config
-from .ocr import BaseOcr
+from .ocr import BaseOcr, OcrResult
 
 # ---------------------------------------------------------------------------- #
 
@@ -18,6 +18,7 @@ from .ocr import BaseOcr
 class Document():
 
     images: List[Image.Image]
+    ocr: List[OcrResult]
     config: Config
     logger: logging.Logger
 
@@ -29,11 +30,19 @@ class Document():
         self._config = config
         self._logger = logging.getLogger("pyghost.document")
 
-        self.load_document(filename=filename)
+        self._load_document(filename=filename)
 
-        self.get_ocr()
+        self._retrieve_ocr()
 
-    def load_document(self, filename: pathlib.Path) -> None:
+    def get_text(self) -> List[str]:
+        result = []
+        for page, ocr in enumerate(self.ocr):
+            result.append(
+                ocr.text
+            )
+        return result
+
+    def _load_document(self, filename: pathlib.Path) -> None:
         if not filename.is_file():
             raise Exception(f"Cannot find file '{filename}'.")
 
@@ -42,11 +51,11 @@ class Document():
             raise Exception(f"Invalid file extension '{filename.suffix}'.")
 
         if filename.suffix.lower() == ".pdf":
-            self.load_pdf(filename=filename)
+            self._load_pdf(filename=filename)
         else:
-            self.load_image(filename=filename)
+            self._load_image(filename=filename)
 
-    def load_pdf(self, filename: pathlib.Path) -> None:
+    def _load_pdf(self, filename: pathlib.Path) -> None:
         self.images = pdf2image.convert_from_path(filename)
         try:
             self.images = pdf2image.convert_from_path(filename)
@@ -54,7 +63,7 @@ class Document():
             raise Exception(f"Unable to convert "
                             f"'{filename.suffix}' to an image.")
 
-    def load_image(self, filename: pathlib.Path) -> None:
+    def _load_image(self, filename: pathlib.Path) -> None:
         try:
             image = Image.open(filename)
             self.images = [image]
@@ -62,10 +71,16 @@ class Document():
             raise Exception(f"Unable to open image file "
                             f"'{filename.suffix}'.")
 
-    def get_ocr(self) -> None:
+    def _retrieve_ocr(self) -> OcrResult:
+        self.ocr = []
         ocr = self._initialize_ocr()
 
-        ocr.process_image(self.images[0])  # todo
+        for page, image in enumerate(self.images):
+            result = ocr.process_image(
+                image=image,
+                page_increment=page
+            )
+            self.ocr.append(result)
 
     def _initialize_ocr(self) -> BaseOcr:
         """

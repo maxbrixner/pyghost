@@ -7,26 +7,7 @@ from typing import Any, List, Optional
 
 # ---------------------------------------------------------------------------- #
 
-from ..matchers import Match
-
-# ---------------------------------------------------------------------------- #
-
-
-class Transformation(pydantic.BaseModel):
-    """
-    This should not be overwritten or extended.
-    """
-    match: Match
-    replacement: str
-
-
-class TransformerResult(pydantic.BaseModel):
-    """
-    This should not be overwritten or extended.
-    """
-    source_text: str
-    transformed_text: str
-    transformations: List[Transformation]
+from ..models import Match, Transformation, TransformerResult
 
 # ---------------------------------------------------------------------------- #
 
@@ -158,6 +139,11 @@ class BaseTransformer():
 
                     matches.append(merged)
 
+        print("----")
+        for match in matches:
+            print(match)
+        print("----")
+
         return matches
 
     def merge(self, match1: Match, match2: Match) -> Match:
@@ -211,7 +197,8 @@ class BaseTransformer():
         trafo_matrix: dict[int, int | None] = dict(
             zip(range(0, len(text)+1), range(0, len(text)+1))
         )
-
+        old = text
+        counter = 0
         for transformation in transformations:
             if transformation.match.ignore:
                 continue
@@ -226,13 +213,24 @@ class BaseTransformer():
             text_new = transformation.replacement
             len_new = len(text_new)
 
+            print("text_orig", text_orig)
+            print("start_orig", start_orig)
+            print("end_orig", end_orig)
+            print("len_orig", len_orig)
+            print("start_orig_tf", start_orig_tf)
+            print("end_orig_tf", end_orig_tf)
+            print("text_new", text_new)
+            print("len_new", len_new)
+
             # if any of the letters of the original text have been already
             # replaced, the transformation cannot be applied.
             for pos in range(start_orig, end_orig):
                 if trafo_matrix[pos] is None:
+                    print(trafo_matrix)
                     raise Exception(f"Match positions are not disjoint. The "
-                                    f"transformation of '{text_orig}' could "
-                                    "not be applied.")
+                                    f"transformation of '{text_orig}' "
+                                    f"at {pos} "
+                                    f"could not be applied.")
 
             # replace the text
             left = text[0:start_orig_tf]
@@ -244,12 +242,20 @@ class BaseTransformer():
             # replacement by the difference of length between the new and old
             # text
             for pos_orig, pos_new in trafo_matrix.items():
-                if pos_orig >= start_orig_tf and pos_orig < end_orig_tf:
+                if pos_orig >= start_orig and pos_orig < end_orig:
                     trafo_matrix[pos_orig] = None
 
-                if pos_orig >= end_orig_tf:
+                if pos_orig >= end_orig:
                     if trafo_matrix[pos_orig] is not None:
                         trafo_matrix[pos_orig] += (len_new - len_orig)
+
+            print(trafo_matrix)
+            print(text)
+            print(old)
+
+            counter += 1
+            if counter == 26:
+                exit(0)
 
         return text
 

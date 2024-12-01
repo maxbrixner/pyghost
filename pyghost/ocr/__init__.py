@@ -1,2 +1,2 @@
-from ._base import BaseOcr
+from ._base import BaseOcr, OcrResult
 from .tesseract import TesseractOcr

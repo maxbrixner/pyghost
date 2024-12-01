@@ -8,9 +8,9 @@ from typing import List, Optional
 
 # ---------------------------------------------------------------------------- #
 
-from .models import Config
-from .matchers import BaseMatcher, Match
-from .transformers import BaseTransformer, TransformerResult
+from .models import Config, Match, TransformerResult
+from .matchers import BaseMatcher
+from .transformers import BaseTransformer
 
 # ---------------------------------------------------------------------------- #
 
