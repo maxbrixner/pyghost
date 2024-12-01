@@ -8,7 +8,7 @@ from typing import List, Optional
 
 # ---------------------------------------------------------------------------- #
 
-from .models import Config, TransformerConfig, MatcherConfig
+from .models import Config
 from .matchers import BaseMatcher, Match
 from .transformers import BaseTransformer, TransformerResult
 
@@ -29,12 +29,12 @@ class Ghost():
 
     def __init__(
         self,
-        config: Optional[pathlib.Path] = None
+        config: Config
     ):
         """
         Initialize the Pseudomizer.
         """
-        self._config = self._load_config(configfile=config)
+        self._config = config
         self._logger = logging.getLogger("pyghost.ghost")
 
         self._matchers = {}
@@ -74,28 +74,6 @@ class Ghost():
         with filename.open("w") as file:
             content = result.dict()
             json.dump(content, file, indent=4)
-
-    def _load_config(
-        self,
-        configfile: Optional[pathlib.Path] = None
-    ) -> Config:
-        """
-        Load the configuration from a config file.
-        """
-        if not configfile:
-            configfile = pathlib.Path(__file__).parent / \
-                pathlib.Path("../config/default.json")
-
-        try:
-            with configfile.open("r") as file:
-                content = json.load(file)
-
-            return Config(**content)
-        except:
-            raise Exception(
-                f"Unable to read the configuration at '{configfile}'. "
-                f"You can specify another location with the --config "
-                f"parameter.")
 
     def _initialize_matchers(self) -> None:
         """

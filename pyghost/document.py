@@ -24,9 +24,9 @@ class Document():
     def __init__(
         self,
         filename: pathlib.Path,
-        config: Optional[pathlib.Path] = None
+        config: Config
     ):
-        self._config = self._load_config(configfile=config)
+        self._config = config
         self._logger = logging.getLogger("pyghost.document")
 
         self.load_document(filename=filename)
@@ -67,34 +67,10 @@ class Document():
 
         ocr.process_image(self.images[0])  # todo
 
-    def _load_config(
-        self,
-        configfile: Optional[pathlib.Path] = None
-    ) -> Config:
-        """
-        Load the configuration from a config file.
-        """
-        if not configfile:
-            configfile = pathlib.Path(__file__).parent / \
-                pathlib.Path("../config/default.json")
-
-        try:
-            with configfile.open("r") as file:
-                content = json.load(file)
-
-            return Config(**content)
-        except Exception as exception:
-            print(exception)
-            raise Exception(
-                f"Unable to read the configuration at '{configfile}'. "
-                f"You can specify another location with the --config "
-                f"parameter.")
-
     def _initialize_ocr(self) -> BaseOcr:
         """
-        Intitialize an ocr provider.
+        Intitialize an ocr provider. The first active provider will be used.
         """
-
         for ocr in self._config.ocr:
             if not ocr.active:
                 continue

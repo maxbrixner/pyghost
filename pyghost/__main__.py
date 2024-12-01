@@ -5,12 +5,14 @@ import logging
 import enum
 import sys
 import pathlib
+import json
 from typing import Optional
 
 # ---------------------------------------------------------------------------- #
 
 from .ghost import Ghost
 from .document import Document
+from .models import Config
 
 # ---------------------------------------------------------------------------- #
 
@@ -48,6 +50,30 @@ def setup_logging(level: LogLevel) -> None:
 # ---------------------------------------------------------------------------- #
 
 
+def load_config(
+    configfile: Optional[pathlib.Path] = None
+) -> Config:
+    """
+    Load the configuration from a config file.
+    """
+    if not configfile:
+        configfile = pathlib.Path(__file__).parent / \
+            pathlib.Path("./config/default.json")
+
+    try:
+        with configfile.open("r") as file:
+            content = json.load(file)
+
+        return Config(**content)
+    except:
+        raise Exception(
+            f"Unable to read the configuration at '{configfile}'. "
+            f"You can specify another location with the --config "
+            f"parameter.")
+
+# ---------------------------------------------------------------------------- #
+
+
 @app.command()
 def text(
     text: str,
@@ -59,6 +85,7 @@ def text(
     Process a text string.
     """
     setup_logging(level=log)
+    config = load_config(configfile=config)
 
     ghost = Ghost(config=config)
 
@@ -78,14 +105,17 @@ def text(
 @app.command()
 def doc(
     document: pathlib.Path,
-    log: LogLevel = LogLevel.INFO
+    log: LogLevel = LogLevel.INFO,
+    config: Optional[pathlib.Path] = None,
+    export: Optional[pathlib.Path] = None
 ) -> None:
     """
     Process a local document (pdf, jpg, png, or tiff).
     """
     setup_logging(level=log)
+    config = load_config(configfile=config)
 
-    document = Document(filename=document)
+    document = Document(filename=document, config=config)
 
 # ---------------------------------------------------------------------------- #
 
