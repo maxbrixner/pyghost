@@ -2,7 +2,7 @@
 
 # pyghost
 
-A simple library and cli tool to pseudonymize and anonymize documents. Pyghost offers
+A simple library and CLI to pseudonymize and anonymize documents. Pyghost offers
 
 - A CLI tool and a library.
 - Configurable and extendible matchers and transformers. You can write your own matchers and transformers or choose from pre-configured transformers from the pyghost library. The latter also includes Spacy-based NLP matchers.
@@ -39,7 +39,7 @@ The pyghost CLI offers three commands:
 |Command|Description|
 |-|-|
 |text|Process direct text input|
-|local|Process local files|
+|doc|Process local files|
 |s3|Process files in an AWS S3 bucket|
 
 You can find more information on these commands by executing
@@ -59,24 +59,36 @@ python -m pyghost <command> --help
 The most simple way to use pyghost is to enter text directly.
 
 ```bash
-python -m pyghost text "My name is John Doe, I am from Dublin, I work for Allianz, and my email is john.doe@example.com"
+python -m pyghost text "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com"
+```
+
+The output should look somewhat like this:
+
+```
+My name is <person>, I was born in <location>, I work for <organization>, and my email is <email>
 ```
 
 To enable a more verbose output, you can print debug information.
 
 ```bash
-python -m pyghost text "My name is John Doe, I am from Dublin, I work for Allianz, and my email is john.doe@example.com" --log DEBUG
+python -m pyghost text "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com" --log DEBUG
 ```
 
 You can also specify the location of a custom config file.
 
 ```bash
-python -m pyghost text "My name is John Doe, I am from Dublin, I work for Allianz, and my email is john.doe@example.com" --config config.json
+python -m pyghost text "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com" --config config.json
 ```
 
 If you do not specify a config file, the default configuration in ``config/default.json`` will be used. To create your own configuration, just copy the default configuration and edit it using any text editor.
 
-### 2.2 Local Command
+It is also possible to export the mapping table as a json file. This file will contain all matches and transformations.
+
+```bash
+python -m pyghost text "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com" --export output.json
+```
+
+### 2.2 Doc Command
 
 todo
 
