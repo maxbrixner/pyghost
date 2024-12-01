@@ -79,3 +79,5 @@ class LabelTransformer(BaseTransformer):
             )
 
         return transformations
+
+# ---------------------------------------------------------------------------- #

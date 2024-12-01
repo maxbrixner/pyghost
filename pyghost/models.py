@@ -58,9 +58,6 @@ class Word(pydantic.BaseModel):
 
 
 class Match(pydantic.BaseModel):
-    """
-    This should not be overwritten or extended.
-    """
     label: str
     text: str
     start: int

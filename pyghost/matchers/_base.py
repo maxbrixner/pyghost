@@ -6,20 +6,7 @@ from typing import Any, List, Optional
 
 # ---------------------------------------------------------------------------- #
 
-
-class Match(pydantic.BaseModel):
-    """
-    This should not be overwritten or extended.
-    """
-    label: str
-    text: str
-    start: int
-    end: int
-
-    context: Optional[str] = None
-    source_labels: Optional[List[str]] = None
-    ignore: bool = False
-    merged: bool = False
+from ..models import Match
 
 # ---------------------------------------------------------------------------- #
 

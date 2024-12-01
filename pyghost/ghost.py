@@ -43,7 +43,7 @@ class Ghost():
         self._initialize_matchers()
         self._initialize_transformers()
 
-    def process(self, text: str) -> TransformerResult:
+    def find_matches(self, text: str) -> List[Match]:
         """
         Process a text, i.e. find matches and transform them.
         """
@@ -56,24 +56,16 @@ class Ghost():
 
             self._logger.debug(f"Found {len(new_matches)} matches.")
 
+        return matches
+
+    def transform_text(self, text: str, matches: List[Match]) -> TransformerResult:
+
         for name, transformer in self._transformers.items():
             self._logger.debug(f"Processing transformer '{name}'.")
 
             result = transformer.process(text=text, matches=matches)
 
         return result
-
-    def export_result(
-        self,
-        result: TransformerResult,
-        filename: pathlib.Path
-    ) -> None:
-        """
-        Save all matches to a json file.
-        """
-        with filename.open("w") as file:
-            content = result.dict()
-            json.dump(content, file, indent=4)
 
     def _initialize_matchers(self) -> None:
         """

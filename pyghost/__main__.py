@@ -6,7 +6,8 @@ import enum
 import sys
 import pathlib
 import json
-from typing import Optional
+import pydantic
+from typing import Any, Optional
 
 # ---------------------------------------------------------------------------- #
 
@@ -74,6 +75,21 @@ def load_config(
 # ---------------------------------------------------------------------------- #
 
 
+def export(
+    self,
+    object: pydantic.BaseModel,
+    filename: pathlib.Path
+) -> None:
+    """
+    Save all matches to a json file.
+    """
+    with filename.open("w") as file:
+        content = object.dict()
+        json.dump(content, file, indent=4)
+
+# ---------------------------------------------------------------------------- #
+
+
 @app.command()
 def text(
     text: str,
@@ -89,11 +105,13 @@ def text(
 
     ghost = Ghost(config=config)
 
-    result = ghost.process(text=text)
+    matches = ghost.find_matches(text=text)
+
+    result = ghost.transform_text(text=text, matches=matches)
 
     if export:
         ghost.export_result(
-            result=result,
+            object=result,
             filename=export
         )
 
@@ -119,15 +137,9 @@ def doc(
     document = Document(filename=document, config=config)
 
     for page, text in enumerate(document.get_text()):
-        result = ghost.process(text=text)
+        matches = ghost.find_matches(text=text)
 
-        if export:
-            ghost.export_result(
-                result=result,
-                filename=export
-            )  # todo: page as suffix
-
-        print(result.transformed_text)
+        print(matches)
 
 # ---------------------------------------------------------------------------- #
 
