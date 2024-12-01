@@ -35,7 +35,7 @@ class Ghost():
         Initialize the Pseudomizer.
         """
         self._config = self._load_config(configfile=config)
-        self._logger = logging.getLogger("pyghost")
+        self._logger = logging.getLogger("pyghost.ghost")
 
         self._matchers = {}
         self._transformers = {}
@@ -105,8 +105,8 @@ class Ghost():
 
         for matcher in self._config.matchers:
             if matcher.name in self._matchers:
-                raise Exception(f"Matcher name '{
-                                matcher.name}' is not unique.")
+                raise Exception(f"Matcher name "
+                                f"'{matcher.name}' is not unique.")
 
             if not matcher.active:
                 continue
@@ -128,8 +128,8 @@ class Ghost():
 
         for transformer in self._config.transformers:
             if transformer.name in self._transformers:
-                raise Exception(f"Transformer name '{
-                                transformer.name}' is not unique.")
+                raise Exception(f"Transformer name "
+                                f"'{transformer.name}' is not unique.")
 
             if not transformer.active:
                 continue

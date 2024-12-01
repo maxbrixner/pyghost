@@ -32,6 +32,15 @@ python -m spacy download de_core_news_sm
 ...
 ```
 
+If you plan to use Tesseract for local OCR, make sure it is installed, e.g.
+
+```bash
+sudo apt-get install tesseract-ocr
+sudo apt-get install tesseract-ocr-eng
+sudo apt-get install tesseract-ocr-deu
+...
+```
+
 ## 2. Use pyghost as a CLI
 
 The pyghost CLI offers three commands:
@@ -90,7 +99,9 @@ python -m pyghost text "My name is John Doe, I was born in Dublin, I work for Al
 
 ### 2.2 Doc Command
 
-todo
+```bash
+python -m pyghost doc test/document1.pdf
+```
 
 ### 2.3 S3 Command
 

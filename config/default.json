@@ -1,4 +1,15 @@
 {
+    "ocr": [
+        {
+            "name": "tesseract",
+            "module": "pyghost.ocr",
+            "cls": "TesseractOcr",
+            "active": true,
+            "config": {
+                "lang": "eng"
+            }
+        }
+    ],
     "matchers": [
         {
             "name": "PersonMatcherEN",

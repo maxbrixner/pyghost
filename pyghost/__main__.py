@@ -10,6 +10,7 @@ from typing import Optional
 # ---------------------------------------------------------------------------- #
 
 from .ghost import Ghost
+from .document import Document
 
 # ---------------------------------------------------------------------------- #
 
@@ -76,12 +77,15 @@ def text(
 
 @app.command()
 def doc(
+    document: pathlib.Path,
     log: LogLevel = LogLevel.INFO
 ) -> None:
     """
     Process a local document (pdf, jpg, png, or tiff).
     """
     setup_logging(level=log)
+
+    document = Document(filename=document)
 
 # ---------------------------------------------------------------------------- #
 

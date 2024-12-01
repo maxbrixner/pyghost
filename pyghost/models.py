@@ -23,7 +23,16 @@ class TransformerConfig(pydantic.BaseModel):
     config: dict[Any, Any] = {}
 
 
+class OcrConfig(pydantic.BaseModel):
+    name: str
+    module: str
+    cls: str
+    active: bool = True
+    config: dict[Any, Any] = {}
+
+
 class Config(pydantic.BaseModel):
+    ocr: List[OcrConfig] = []
     matchers: List[MatcherConfig] = []
     transformers: List[TransformerConfig] = []
 

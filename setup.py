@@ -9,7 +9,10 @@ author_email = "max.brixner@allianz.de"
 dependencies = [
     "typer",
     "spacy",
-    "pydantic"
+    "pydantic",
+    "pdf2image",
+    "pillow",
+    "pytesseract"
 ]
 
 setup(
