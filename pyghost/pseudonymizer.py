@@ -61,14 +61,9 @@ class Pseudonymizer():
 
             result = transformer.process(text=text, matches=matches)
 
-        self._export_result(
-            result=result,
-            filename=pathlib.Path("test_export.json")
-        )
-
         return result
 
-    def _export_result(
+    def export_result(
         self,
         result: TransformerResult,
         filename: pathlib.Path

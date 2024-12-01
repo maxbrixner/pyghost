@@ -51,7 +51,8 @@ def setup_logging(level: LogLevel):
 def text(
     text: str,
     log: LogLevel = LogLevel.INFO,
-    config: Optional[pathlib.Path] = None
+    config: Optional[pathlib.Path] = None,
+    export: Optional[pathlib.Path] = None
 ) -> None:
     """
     Process a text string.
@@ -61,6 +62,12 @@ def text(
     pseudonymizer = Pseudonymizer(config=config)
 
     result = pseudonymizer.process(text=text)
+
+    if export:
+        pseudonymizer.export_result(
+            result=result,
+            filename=export
+        )
 
     print(result.transformed_text)
 
