@@ -9,7 +9,7 @@ from typing import Optional
 
 # ---------------------------------------------------------------------------- #
 
-from .pseudonymizer import Pseudonymizer
+from .ghost import Ghost
 
 # ---------------------------------------------------------------------------- #
 
@@ -59,12 +59,12 @@ def text(
     """
     setup_logging(level=log)
 
-    pseudonymizer = Pseudonymizer(config=config)
+    ghost = Ghost(config=config)
 
-    result = pseudonymizer.process(text=text)
+    result = ghost.process(text=text)
 
     if export:
-        pseudonymizer.export_result(
+        ghost.export_result(
             result=result,
             filename=export
         )

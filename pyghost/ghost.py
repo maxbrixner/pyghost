@@ -15,7 +15,7 @@ from .transformers import BaseTransformer, TransformerResult
 # ---------------------------------------------------------------------------- #
 
 
-class Pseudonymizer():
+class Ghost():
     """
     The Pseudomizer processes a text by using the configured matchers to
     find entities and the configures transformers to transform those
