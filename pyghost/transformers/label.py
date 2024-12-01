@@ -27,32 +27,14 @@ class LabelTransformer(BaseTransformer):
         suffix: str = ">"
         memory: bool = False
 
-    memory: dict[str, str]
     counter: dict[str, int]
 
-    def process(self, text: str, matches: List[Match]) -> TransformerResult:
-        """
-        Overwrite this method to implement your transformer's processing.
-        """
-        # merged_matches = self.merge_overlapping_matches(matches)
-
-        transformations = self.create_transformations(matches=matches)
-
-        transformed_text = self.apply_transformations(
-            text=text,
-            transformations=transformations
-        )
-
-        return TransformerResult(
-            source_text=text,
-            transformed_text=transformed_text,
-            transformations=transformations
-        )
-
     def __init__(self, config: dict[Any, Any]) -> None:
+        """
+        Initialize the label transformer.
+        """
         super().__init__(config=config)
         self.counter = {}
-        self.memory = {}
 
     def create_transformations(
         self,
@@ -60,29 +42,39 @@ class LabelTransformer(BaseTransformer):
     ) -> List[Transformation]:
         """
         Create transformations by replacing matches with their respective
-        labels.
+        labels. If memory is active, labels will be counted to give same
+        entities the same labels.
         """
         transformations = []
         for match in matches:
             if not self.config.memory:
-                replacement = f"{self.config.prefix}{match.label}" \
-                    f"{self.config.suffix}"
+                replacement = match.label
             else:
                 if not match.label in self.counter:
                     self.counter[match.label] = 0
 
-                if match.text in self.memory:
-                    replacement = self.memory[match.text]
+                memory = self.from_memory(label=match.label, text=match.text)
+
+                if memory:
+                    self.logger.debug(
+                        f"Getting replacment for '{match.text}' from memory.")
+                    replacement = memory
                 else:
                     self.counter[match.label] += 1
-                    replacement = f"{self.config.prefix}{match.label}" \
-                        f"{self.counter[match.label]}{self.config.suffix}"
-                    self.memory[match.text] = replacement
+                    replacement = match.label
+                    self.add_to_memory(
+                        label=match.label,
+                        text=match.text,
+                        replacement=replacement
+                    )
 
             transformations.append(
                 Transformation(
                     match=match,
-                    replacement=replacement,
+                    replacement=f"{self.config.prefix}"
+                    f"{replacement}"
+                    f"{self.counter[match.label]}"
+                    f"{self.config.suffix}"
                 )
             )
 

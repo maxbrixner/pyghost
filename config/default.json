@@ -93,6 +93,18 @@
                     }
                 ]
             }
+        },
+        {
+            "name": "TestMatcher",
+            "label": "test",
+            "module": "pyghost.matchers",
+            "cls": "RegexMatcher",
+            "active": true,
+            "config": {
+                "patterns": [
+                    "is John"
+                ]
+            }
         }
     ],
     "transformers": [

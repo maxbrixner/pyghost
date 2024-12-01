@@ -13,6 +13,9 @@ from ..matchers import Match
 
 
 class Transformation(pydantic.BaseModel):
+    """
+    This should not be overwritten or extended.
+    """
     match: Match
     replacement: str
 
@@ -43,7 +46,7 @@ class BaseTransformer():
     config: TransformerConfig
     logger: logging.Logger
 
-    memory: dict[str, str]
+    memory: dict[str, dict[str, str]]
 
     def __init__(
         self,
@@ -56,72 +59,139 @@ class BaseTransformer():
         self.logger = logging.getLogger("pyghost.transformers")
         self.memory = {}
 
-    def process(self, text: str, matches: List[Match]) -> TransformerResult:
+    def create_transformations(
+        self,
+        matches: List[Match]
+    ) -> List[Transformation]:
         """
         Overwrite this method to implement your transformer's processing.
         """
-        return TransformerResult(
-            source_text=text,
-            transformed_text=text,
-            transformations=[]
+        return []
+
+    def process(self, text: str, matches: List[Match]) -> TransformerResult:
+        """
+        Merge overlappig transformations, call create_transformations and apply
+        them to the text. Only overwrite this in special cases.
+        """
+        merged_matches = self.merge_overlapping_matches(matches)
+
+        transformations = self.create_transformations(matches=matches)
+
+        transformed_text = self.apply_transformations(
+            text=text,
+            transformations=transformations
         )
 
-    def add_to_memory(self, text: str, replacement: str) -> None:
-        if text in self.memory:
-            self.logger.warning("Overwriting memory of '{text}'.")
-        self.memory[text] = replacement
+        return TransformerResult(
+            source_text=text,
+            transformed_text=transformed_text,
+            transformations=transformations
+        )
 
-    def from_memory(self, text: str) -> str | None:
-        if text in self.memory:
-            return self.memory[text]
-        else:
-            return None
+    def add_to_memory(
+        self,
+        label: str,
+        text: str,
+        replacement: str
+    ) -> None:
+        """
+        Add a text belonging to a certain label to memory.
+        """
+        self.memory[label] = {text: replacement}
+
+    def from_memory(self, label: str, text: str) -> str | None:
+        """
+        Retrieve a text belonging to a certain label from memory.
+        """
+        if label in self.memory:
+            if text in self.memory[label]:
+                return self.memory[label][text]
+
+        return None
 
     def merge_overlapping_matches(self, matches: List[Match]) -> List[Match]:
-        if len(matches) < 1:
-            return []
+        """
+        Merge overlapping matches.
+        """
+        for index, match in enumerate(matches):
+            for prev_index, prev_match in enumerate(matches):
 
-        merged: List[Match] = []
-        for new_match in matches:
-            append = True
-            for index, old_match in enumerate(merged):
-                # new match is a subset of the old match:
-                # old match dominates
-                if new_match.start >= old_match.start \
-                        and new_match.end <= old_match.end:
+                # only check previous matches
+                if prev_index >= index or prev_match.ignore:
+                    break
+
+                # match is a subset of the previous match:
+                # previous match dominates
+                if match.start >= prev_match.start \
+                        and match.end <= prev_match.end:
                     self.logger.debug(
-                        f"Match '{new_match.text}' is subset of match "
-                        f"'{old_match.text}'. Will skip.")
-                    append = False
+                        f"Match '{match.text}' is subset of match "
+                        f"'{prev_match.text}'. Will skip.")
+                    match.ignore = True
                     continue
 
-                # new match is a superset of the old match:
-                # new match dominates
-                if new_match.start <= old_match.start \
-                        and new_match.end >= old_match.end:
+                # match is a superset of the previous match:
+                # previous match dominates
+                if match.start <= prev_match.start \
+                        and match.end >= prev_match.end:
                     self.logger.debug(
-                        f"Match '{new_match.text}' is real superset of match "
-                        f"'{old_match.text}'. Will replace.")
-                    merged[index] = new_match.copy()
-                    append = False
+                        f"Match '{match.text}' is real superset of match "
+                        f"'{prev_match.text}'. Will replace.")
+                    match.ignore = True
                     continue
 
-                # new match overlaps old match
-                # ???
-                if (new_match.start < old_match.start
-                        and new_match.end < old_match.end
-                        and new_match.end > old_match.start) or \
-                   (new_match.start > old_match.start
-                        and new_match.start < old_match.end
-                        and new_match.end > old_match.end):
-                    # old_match.start = min(new_match.start, old_match.start)
-                    # old_match.end = max(old_match.end, old_match.end)
-                    raise Exception("WHAT TO DO?")  # todo
+                # match overlaps previous match
+                # merge the two matches
+                if (match.start < prev_match.start
+                        and match.end < prev_match.end
+                        and match.end > prev_match.start) or \
+                   (match.start > prev_match.start
+                        and match.start < prev_match.end
+                        and match.end > prev_match.end):
+                    self.logger.debug(
+                        f"Match '{match.text}' overlaps with match "
+                        f"'{prev_match.text}'. Will merge.")
+                    match.ignore = True
+                    prev_match.ignore = True
 
-            if append:
-                merged.append(new_match.copy())
+                    merged = self.merge(match, prev_match)
 
-        return merged
+                    matches.append(merged)
+
+        return matches
+
+    def merge(self, match1: Match, match2: Match) -> Match:
+        """
+        Merge two matches by combining their start end end positions and
+        their text. Merged matches will have merged=True. If the two
+        matches had the same label, the merged match will have the same label.
+        Otherwise it will have the label "multiple".
+        """
+        start = min(match1.start, match2.start)
+        end = max(match1.end, match2.end)
+
+        if match1.label == match2.label:
+            label = match1.label
+        else:
+            label = "multiple"
+
+        if match1.start <= match2.start:
+            left = match1.text
+        else:
+            left = match2.text
+
+        if match1.end >= match2.end:
+            right = match1.text[(max(match1.start, match2.end)-match1.start):]
+        else:
+            right = match2.text[(max(match2.start, match1.end)-match2.start):]
+
+        return Match(
+            start=start,
+            end=end,
+            text=left+right,
+            label=label,
+            merged=True
+        )
 
     def apply_transformations(
         self,
@@ -140,6 +210,8 @@ class BaseTransformer():
         old_text = text
 
         for transformation in transformations:
+            if transformation.match.ignore:
+                continue
 
             text_orig = transformation.match.text
             start_orig = transformation.match.start
