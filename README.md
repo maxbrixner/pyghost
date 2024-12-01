@@ -80,7 +80,7 @@ You can also specify the location of a custom config file.
 python -m pyghost text "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. Dublin is so beautiful this time of the year." --config config.json
 ```
 
-If you do not specify a config file, the default configuration in ``config/default.json`` will be used. To create your own configuration, just copy the default configuration and edit it using any text editor.
+If you do not specify a config file, the default configuration in ``config/default.json`` will be used. To create your own configuration, just copy the default configuration and edit it using any text editor. See the chapter on configuration for details.
 
 It is also possible to export the mapping table as a json file. This file will contain all matches and transformations.
 

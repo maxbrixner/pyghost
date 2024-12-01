@@ -199,15 +199,18 @@ class BaseTransformer():
         transformations: List[Transformation]
     ) -> str:
         """
-        todo
+        Apply a list of transformations to a text. The mathematical function
+        that determines the new positions relative to the transformed text is
+        encoded in a transformation matrix.
         """
-
-        # the trafo matrix says: for every letter from the original text: where is it now?
+        # Interpretation of the transformation matrix: the keys are the
+        # positions of the letters in the original text. The values are the new
+        # positions of these letters now. A value of None means that the letter
+        # that was present at this specific position, does no longer exist
+        # (i.e. has been removed or been replaced)
         trafo_matrix: dict[int, int | None] = dict(
             zip(range(0, len(text)+1), range(0, len(text)+1))
         )
-
-        old_text = text
 
         for transformation in transformations:
             if transformation.match.ignore:
@@ -223,39 +226,23 @@ class BaseTransformer():
             text_new = transformation.replacement
             len_new = len(text_new)
 
-            # print("text_orig", text_orig)
-            # print("text_new", text_new)
-            # print("start_orig", start_orig)
-            # print("end_orig", end_orig)
-            # print("len_orig", len_orig)
-            # print("start_orig_tf", start_orig_tf)
-            # print("end_orig_tf", end_orig_tf)
-            # print("len_new", len_new)
-
-            if start_orig_tf is None or end_orig_tf is None:
-                self.logger.warning(
-                    "Match positions are not disjoint.")
-                continue
-
-            abort = False
+            # if any of the letters of the original text have been already
+            # replaced, the transformation cannot be applied.
             for pos in range(start_orig, end_orig):
                 if trafo_matrix[pos] is None:
-                    self.logger.warning(
-                        "Match positions are not disjoint.")
-                    abort = True
-                    break
+                    raise Exception(f"Match positions are not disjoint. The "
+                                    f"transformation of '{text_orig}' could "
+                                    "not be applied.")
 
-            if abort:
-                # print("")
-                continue
+            # replace the text
+            left = text[0:start_orig_tf]
+            right = text[end_orig_tf:]
+            text = left + text_new + right
 
-            before = text[0:start_orig_tf]
-            after = text[end_orig_tf:]
-            text = before + text_new + after
-
-            # print(text)
-            # print(old_text)
-
+            # Update the transformation matrix, i.e. replace any position with
+            # a replaced letter with None and move letters after the
+            # replacement by the difference of length between the new and old
+            # text
             for pos_orig, pos_new in trafo_matrix.items():
                 if pos_orig >= start_orig_tf and pos_orig < end_orig_tf:
                     trafo_matrix[pos_orig] = None
@@ -263,10 +250,6 @@ class BaseTransformer():
                 if pos_orig >= end_orig_tf:
                     if trafo_matrix[pos_orig] is not None:
                         trafo_matrix[pos_orig] += (len_new - len_orig)
-
-            # print(trafo_matrix)
-
-            # print("")
 
         return text
 
