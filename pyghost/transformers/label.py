@@ -25,6 +25,10 @@ class LabelTransformer(BaseTransformer):
         """
         prefix: str = "<"
         suffix: str = ">"
+        memory: bool = False
+
+    memory: dict[str, str]
+    counter: dict[str, int]
 
     def process(self, text: str, matches: List[Match]) -> TransformerResult:
         """
@@ -45,6 +49,11 @@ class LabelTransformer(BaseTransformer):
             transformations=transformations
         )
 
+    def __init__(self, config: dict[Any, Any]) -> None:
+        super().__init__(config=config)
+        self.counter = {}
+        self.memory = {}
+
     def create_transformations(
         self,
         matches: List[Match]
@@ -55,12 +64,25 @@ class LabelTransformer(BaseTransformer):
         """
         transformations = []
         for match in matches:
+            if not self.config.memory:
+                replacement = f"{self.config.prefix}{match.label}" \
+                    f"{self.config.suffix}"
+            else:
+                if not match.label in self.counter:
+                    self.counter[match.label] = 0
+
+                if match.text in self.memory:
+                    replacement = self.memory[match.text]
+                else:
+                    self.counter[match.label] += 1
+                    replacement = f"{self.config.prefix}{match.label}" \
+                        f"{self.counter[match.label]}{self.config.suffix}"
+                    self.memory[match.text] = replacement
+
             transformations.append(
                 Transformation(
                     match=match,
-                    replacement=f"{self.config.prefix}"
-                    f"{match.label}"
-                    f"{self.config.suffix}"
+                    replacement=replacement,
                 )
             )
 

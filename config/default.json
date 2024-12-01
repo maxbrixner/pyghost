@@ -103,7 +103,8 @@
             "active": true,
             "config": {
                 "prefix": "<",
-                "suffix": ">"
+                "suffix": ">",
+                "memory": true
             }
         }
     ]
