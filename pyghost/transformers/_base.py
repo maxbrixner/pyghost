@@ -43,6 +43,8 @@ class BaseTransformer():
     config: TransformerConfig
     logger: logging.Logger
 
+    memory: dict[str, str]
+
     def __init__(
         self,
         config: dict[Any, Any]
@@ -52,6 +54,7 @@ class BaseTransformer():
         """
         self.config = self.TransformerConfig(**config)
         self.logger = logging.getLogger("pyghost.transformers")
+        self.memory = {}
 
     def process(self, text: str, matches: List[Match]) -> TransformerResult:
         """
@@ -60,14 +63,25 @@ class BaseTransformer():
         return TransformerResult(
             source_text=text,
             transformed_text=text,
-            transformations={}
+            transformations=[]
         )
+
+    def add_to_memory(self, text: str, replacement: str) -> None:
+        if text in self.memory:
+            self.logger.warning("Overwriting memory of '{text}'.")
+        self.memory[text] = replacement
+
+    def from_memory(self, text: str) -> str | None:
+        if text in self.memory:
+            return self.memory[text]
+        else:
+            return None
 
     def merge_overlapping_matches(self, matches: List[Match]) -> List[Match]:
         if len(matches) < 1:
             return []
 
-        merged = []
+        merged: List[Match] = []
         for new_match in matches:
             append = True
             for index, old_match in enumerate(merged):
@@ -119,7 +133,7 @@ class BaseTransformer():
         """
 
         # the trafo matrix says: for every letter from the original text: where is it now?
-        trafo_matrix = dict(
+        trafo_matrix: dict[int, int | None] = dict(
             zip(range(0, len(text)+1), range(0, len(text)+1))
         )
 
@@ -148,15 +162,14 @@ class BaseTransformer():
 
             if start_orig_tf is None or end_orig_tf is None:
                 self.logger.warning(
-                    "Trying to manipulate already replaced text1")
-                print("")
+                    "Match positions are not disjoint.")
                 continue
 
             abort = False
             for pos in range(start_orig, end_orig):
                 if trafo_matrix[pos] is None:
                     self.logger.warning(
-                        "Trying to manipulate already replaced text2")
+                        "Match positions are not disjoint.")
                     abort = True
                     break
 

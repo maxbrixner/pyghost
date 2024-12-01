@@ -13,7 +13,7 @@ from ._base import BaseMatcher, Match
 
 class SpacyCacher():
 
-    models: dict[str, spacy.language]
+    models: dict[str, spacy.Language]
 
     def __init__(self) -> None:
         self.models = {}
@@ -34,7 +34,7 @@ class SpacyMatcher(BaseMatcher):
         model: str
         labels: Optional[List[str]] = None
 
-    model: Optional[spacy.language] = None
+    model: Optional[spacy.Language] = None
 
     def __init__(
         self,
@@ -66,6 +66,9 @@ class SpacyMatcher(BaseMatcher):
         """
         Use spacy to identify entities.
         """
+        if self.model is None:
+            raise Exception("Invalid spacy model.")
+
         doc = self.model(text=text)
 
         result = []

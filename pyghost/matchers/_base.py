@@ -19,6 +19,7 @@ class Match(pydantic.BaseModel):
     context: Optional[str] = None
     source_labels: Optional[List[str]] = None
     ignore: bool = False
+    merged: bool = False
 
 # ---------------------------------------------------------------------------- #
 

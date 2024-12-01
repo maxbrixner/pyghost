@@ -29,7 +29,7 @@ class LogLevel(str, enum.Enum):
 # ---------------------------------------------------------------------------- #
 
 
-def setup_logging(level: LogLevel):
+def setup_logging(level: LogLevel) -> None:
     """
     Setup the logger for pyghost.
     """

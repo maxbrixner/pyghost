@@ -1,0 +1,12 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "linting",
+            "command": "${workspaceFolder}/.venv/bin/mypy --disallow-untyped-defs --disallow-incomplete-defs --ignore-missing-imports pyghost",
+            "problemMatcher": [],
+            "group": "test"
+        }
+    ]
+}

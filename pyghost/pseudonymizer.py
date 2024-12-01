@@ -8,7 +8,7 @@ from typing import List, Optional
 
 # ---------------------------------------------------------------------------- #
 
-from .models import Config
+from .models import Config, TransformerConfig, MatcherConfig
 from .matchers import BaseMatcher, Match
 from .transformers import BaseTransformer, TransformerResult
 

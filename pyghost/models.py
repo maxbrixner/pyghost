@@ -6,10 +6,6 @@ from typing import Any, List
 # ---------------------------------------------------------------------------- #
 
 
-class TransformerConfig(pydantic.BaseModel):
-    module: str
-
-
 class MatcherConfig(pydantic.BaseModel):
     name: str
     label: str

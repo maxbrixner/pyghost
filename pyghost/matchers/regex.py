@@ -70,7 +70,7 @@ class RegexMatcher(BaseMatcher):
 
         return result
 
-    def _match_pattern(self, text: str, pattern: PatternConfig):
+    def _match_pattern(self, text: str, pattern: PatternConfig) -> List[Match]:
         """
         Process a single pattern and find all matches.
         """
