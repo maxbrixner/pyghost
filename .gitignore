@@ -3,3 +3,7 @@ __pycache__/
 .venv/
 .env
 output*.json
+output*.jpg
+output*.png
+output*.tiff
+output*.pdf

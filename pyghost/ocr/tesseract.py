@@ -4,7 +4,7 @@ from PIL import Image
 from typing import List
 
 from ._base import BaseOcr
-from ..models import OcrResult, Word
+from ..models import OcrResult, Word, Coordinates
 
 
 class TesseractOcr(BaseOcr):
@@ -52,13 +52,15 @@ class TesseractOcr(BaseOcr):
             words.append(
                 Word(
                     text=text,
-                    left=result.left[index],
-                    top=result.top[index],
-                    width=result.width[index],
-                    height=result.height[index],
-                    page=result.page_num[index]+page_increment,
                     start=start,
-                    end=end
+                    end=end,
+                    page=result.page_num[index]+page_increment,
+                    coordinates=Coordinates(
+                        left=result.left[index],
+                        top=result.top[index],
+                        width=result.width[index],
+                        height=result.height[index]
+                    )
                 )
             )
 

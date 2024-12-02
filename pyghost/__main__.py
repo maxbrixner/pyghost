@@ -150,6 +150,8 @@ def doc(
                 suffix=str(page)
             )
 
+        document.manipulate_page(page=page, transformer=result)
+
         print(result.transformed_text)
 
 # ---------------------------------------------------------------------------- #

@@ -11,12 +11,17 @@ from typing import Any, List, Optional
 
 from .models import Config
 from .ocr import BaseOcr, OcrResult
+from .transformers import TransformerResult
 
 # ---------------------------------------------------------------------------- #
 
 
 class Document():
-
+    """
+    The Document class reads images or PDF documents (which will be converted
+    to images), calls OCR providers and applies manipulations to the images
+    before exporting them.
+    """
     images: List[Image.Image]
     ocr: List[OcrResult]
     config: Config
@@ -97,5 +102,45 @@ class Document():
             cls = getattr(module, ocr.cls)
 
             return cls(config=ocr.config)
+
+    def manipulate_page(
+        self,
+        page: int,
+        transformer: TransformerResult
+    ) -> None:
+        draw = ImageDraw.Draw(self.images[page])
+
+        for word in self.ocr[page].words:
+            for transformation in transformer.transformations:
+                if transformation.match.ignore:
+                    continue
+
+                # check here if word overlaps with transformation
+
+                self.draw_rectangle(
+                    draw=draw,
+                    left=word.coordinates.left,
+                    top=word.coordinates.top,
+                    width=word.coordinates.width,
+                    height=word.coordinates.height
+                )
+
+        self.images[page].save("output.jpg")
+
+    def draw_rectangle(
+        self,
+        draw: ImageDraw.Draw,
+        left: int,
+        top: int,
+        width: int,
+        height: int,
+        color: str = "#000000"
+    ) -> None:
+        draw.rectangle(
+            [
+                (left, top),
+                (left+width, top+height)
+            ],
+            fill=color)
 
 # ---------------------------------------------------------------------------- #

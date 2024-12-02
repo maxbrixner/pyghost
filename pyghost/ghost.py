@@ -58,7 +58,11 @@ class Ghost():
 
         return matches
 
-    def transform_text(self, text: str, matches: List[Match]) -> TransformerResult:
+    def transform_text(
+        self,
+        text: str,
+        matches: List[Match]
+    ) -> TransformerResult:
 
         for name, transformer in self._transformers.items():
             self._logger.debug(f"Processing transformer '{name}'.")
