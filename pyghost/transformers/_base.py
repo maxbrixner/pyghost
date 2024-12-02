@@ -99,7 +99,7 @@ class BaseTransformer():
 
                 # only check previous matches
                 if prev_index >= index or prev_match.ignore:
-                    break
+                    continue
 
                 # match is a subset of the previous match:
                 # previous match dominates
@@ -138,11 +138,6 @@ class BaseTransformer():
                     merged = self.merge(match, prev_match)
 
                     matches.append(merged)
-
-        print("----")
-        for match in matches:
-            print(match)
-        print("----")
 
         return matches
 
@@ -197,11 +192,13 @@ class BaseTransformer():
         trafo_matrix: dict[int, int | None] = dict(
             zip(range(0, len(text)+1), range(0, len(text)+1))
         )
-        old = text
-        counter = 0
+
         for transformation in transformations:
             if transformation.match.ignore:
                 continue
+
+            self.logger.debug(f"Applying transformation to "
+                              f"'{transformation.match.text}'.")
 
             text_orig = transformation.match.text
             start_orig = transformation.match.start
@@ -213,20 +210,10 @@ class BaseTransformer():
             text_new = transformation.replacement
             len_new = len(text_new)
 
-            print("text_orig", text_orig)
-            print("start_orig", start_orig)
-            print("end_orig", end_orig)
-            print("len_orig", len_orig)
-            print("start_orig_tf", start_orig_tf)
-            print("end_orig_tf", end_orig_tf)
-            print("text_new", text_new)
-            print("len_new", len_new)
-
             # if any of the letters of the original text have been already
             # replaced, the transformation cannot be applied.
             for pos in range(start_orig, end_orig):
                 if trafo_matrix[pos] is None:
-                    print(trafo_matrix)
                     raise Exception(f"Match positions are not disjoint. The "
                                     f"transformation of '{text_orig}' "
                                     f"at {pos} "
@@ -249,14 +236,16 @@ class BaseTransformer():
                     if trafo_matrix[pos_orig] is not None:
                         trafo_matrix[pos_orig] += (len_new - len_orig)
 
-            print(trafo_matrix)
-            print(text)
-            print(old)
-
-            counter += 1
-            if counter == 26:
-                exit(0)
-
         return text
+
+    def debug_print(self, trafo_matrix, old_text, text):
+        keys = list(trafo_matrix.keys())
+        values = list(trafo_matrix.values())
+        for i in range(len(old_text)):
+            key = keys[i]
+            value = values[i]
+            old = old_text[i]
+            new = text[values[i]] if values[i] is not None else None
+            print(f"{key} {value} {old} {new}")
 
 # ---------------------------------------------------------------------------- #

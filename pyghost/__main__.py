@@ -75,16 +75,18 @@ def load_config(
 # ---------------------------------------------------------------------------- #
 
 
-def export(
-    self,
+def export_to_json(
     object: pydantic.BaseModel,
-    filename: pathlib.Path
+    filename: pathlib.Path,
+    suffix: Optional[str] = None
 ) -> None:
     """
     Save all matches to a json file.
     """
+    if suffix:
+        filename = filename.with_stem(f"{filename.stem}{suffix}")
     with filename.open("w") as file:
-        content = object.dict()
+        content = object.model_dump()
         json.dump(content, file, indent=4)
 
 # ---------------------------------------------------------------------------- #
@@ -110,7 +112,7 @@ def text(
     result = ghost.transform_text(text=text, matches=matches)
 
     if export:
-        ghost.export_result(
+        export_to_json(
             object=result,
             filename=export
         )
@@ -139,7 +141,16 @@ def doc(
     for page, text in enumerate(document.get_text()):
         matches = ghost.find_matches(text=text)
 
-        print(matches)
+        result = ghost.transform_text(text=text, matches=matches)
+
+        if export:
+            export_to_json(
+                object=result,
+                filename=export,
+                suffix=str(page)
+            )
+
+        print(result.transformed_text)
 
 # ---------------------------------------------------------------------------- #
 
