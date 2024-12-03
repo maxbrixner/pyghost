@@ -11,7 +11,7 @@ class MatcherConfig(pydantic.BaseModel):
     label: str
     module: str
     cls: str
-    active: bool = True
+    languages: List[str]
     config: dict[Any, Any] = {}
 
 
@@ -19,7 +19,6 @@ class TransformerConfig(pydantic.BaseModel):
     name: str
     module: str
     cls: str
-    active: bool = True
     config: dict[Any, Any] = {}
 
 
@@ -27,7 +26,7 @@ class OcrConfig(pydantic.BaseModel):
     name: str
     module: str
     cls: str
-    active: bool = True
+    languages: List[str]
     config: dict[Any, Any] = {}
 
 
@@ -63,8 +62,11 @@ class Match(pydantic.BaseModel):
     start: int
     end: int
 
+    matcher: str
+
     context: Optional[str] = None
-    source_labels: Optional[List[str]] = None
+    model_label: Optional[str] = None
+    model_confidence: Optional[float] = None
     ignore: bool = False
     merged: bool = False
 

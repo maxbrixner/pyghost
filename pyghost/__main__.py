@@ -62,7 +62,7 @@ def load_config(
             pathlib.Path("./config/default.json")
 
     try:
-        with configfile.open("r") as file:
+        with configfile.open("r", encoding="utf-8") as file:
             content = json.load(file)
 
         return Config(**content)
@@ -85,7 +85,7 @@ def export_to_json(
     """
     if suffix:
         filename = filename.with_stem(f"{filename.stem}{suffix}")
-    with filename.open("w") as file:
+    with filename.open("w", encoding="utf-8") as file:
         content = object.model_dump()
         json.dump(content, file, indent=4)
 
@@ -94,6 +94,7 @@ def export_to_json(
 
 @app.command()
 def text(
+    language: str,
     text: str,
     log: LogLevel = LogLevel.INFO,
     config: Optional[pathlib.Path] = None,
@@ -105,7 +106,10 @@ def text(
     setup_logging(level=log)
     config = load_config(configfile=config)
 
-    ghost = Ghost(config=config)
+    ghost = Ghost(
+        language=language,
+        config=config
+    )
 
     matches = ghost.find_matches(text=text)
 
@@ -124,10 +128,13 @@ def text(
 
 @app.command()
 def doc(
+    language: str,
     document: pathlib.Path,
     log: LogLevel = LogLevel.INFO,
     config: Optional[pathlib.Path] = None,
-    export: Optional[pathlib.Path] = None
+    export: Optional[pathlib.Path] = None,
+    ocr: Optional[str] = None,
+    transformer: Optional[str] = None
 ) -> None:
     """
     Process a local document (pdf, jpg, png, or tiff).
@@ -135,8 +142,15 @@ def doc(
     setup_logging(level=log)
     config = load_config(configfile=config)
 
-    ghost = Ghost(config=config)
-    document = Document(filename=document, config=config)
+    ghost = Ghost(
+        language=language,
+        config=config
+    )
+    document = Document(
+        filename=document,
+        language=language,
+        config=config,
+        ocr_provider=ocr)
 
     for page, text in enumerate(document.get_text()):
         matches = ghost.find_matches(text=text)

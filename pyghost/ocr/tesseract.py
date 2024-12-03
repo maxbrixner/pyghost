@@ -9,6 +9,13 @@ from ..models import OcrResult, Word, Coordinates
 
 class TesseractOcr(BaseOcr):
 
+    class OcrConfig(pydantic.BaseModel):
+        """
+        Use this pydantic model to define your matcher's config
+        parameters.
+        """
+        lang: str
+
     class TesseractResult(pydantic.BaseModel):
         level: List[int]
         page_num: List[int]
@@ -29,7 +36,7 @@ class TesseractOcr(BaseOcr):
         page_increment: 0
     ) -> OcrResult:
         boxes = pytesseract.image_to_data(
-            image, output_type=pytesseract.Output.DICT, lang="eng")
+            image, output_type=pytesseract.Output.DICT, lang=self.config.lang)
 
         result = self.TesseractResult(**boxes)
 

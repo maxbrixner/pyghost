@@ -1,12 +1,25 @@
 {
     "ocr": [
         {
-            "name": "tesseract",
+            "name": "tesseractEN",
             "module": "pyghost.ocr",
             "cls": "TesseractOcr",
-            "active": true,
+            "languages": [
+                "en"
+            ],
             "config": {
                 "lang": "eng"
+            }
+        },
+        {
+            "name": "tesseractDE",
+            "module": "pyghost.ocr",
+            "cls": "TesseractOcr",
+            "languages": [
+                "de"
+            ],
+            "config": {
+                "lang": "deu"
             }
         }
     ],
@@ -16,7 +29,9 @@
             "label": "person",
             "module": "pyghost.matchers",
             "cls": "SpacyMatcher",
-            "active": true,
+            "languages": [
+                "en"
+            ],
             "config": {
                 "model": "en_core_web_sm",
                 "labels": [
@@ -29,7 +44,9 @@
             "label": "person",
             "module": "pyghost.matchers",
             "cls": "SpacyMatcher",
-            "active": true,
+            "languages": [
+                "de"
+            ],
             "config": {
                 "model": "de_core_news_sm",
                 "labels": [
@@ -42,7 +59,9 @@
             "label": "organization",
             "module": "pyghost.matchers",
             "cls": "SpacyMatcher",
-            "active": true,
+            "languages": [
+                "en"
+            ],
             "config": {
                 "model": "en_core_web_sm",
                 "labels": [
@@ -55,7 +74,9 @@
             "label": "organization",
             "module": "pyghost.matchers",
             "cls": "SpacyMatcher",
-            "active": true,
+            "languages": [
+                "de"
+            ],
             "config": {
                 "model": "de_core_news_sm",
                 "labels": [
@@ -68,7 +89,9 @@
             "label": "location",
             "module": "pyghost.matchers",
             "cls": "SpacyMatcher",
-            "active": true,
+            "languages": [
+                "en"
+            ],
             "config": {
                 "model": "en_core_web_sm",
                 "labels": [
@@ -81,7 +104,9 @@
             "label": "location",
             "module": "pyghost.matchers",
             "cls": "SpacyMatcher",
-            "active": true,
+            "languages": [
+                "de"
+            ],
             "config": {
                 "model": "de_core_news_sm",
                 "labels": [
@@ -94,7 +119,10 @@
             "label": "email",
             "module": "pyghost.matchers",
             "cls": "RegexMatcher",
-            "active": true,
+            "languages": [
+                "en",
+                "de"
+            ],
             "config": {
                 "patterns": [
                     "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}",
@@ -111,7 +139,6 @@
             "name": "LabelTransformer",
             "module": "pyghost.transformers",
             "cls": "LabelTransformer",
-            "active": true,
             "config": {
                 "prefix": "<",
                 "suffix": ">",

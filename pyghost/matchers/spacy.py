@@ -40,9 +40,10 @@ class SpacyMatcher(BaseMatcher):
     def __init__(
         self,
         label: str,
+        name: str,
         config: dict[Any, Any]
     ) -> None:
-        super().__init__(label=label, config=config)
+        super().__init__(name=name, label=label, config=config)
 
         self.model = None
         self._load_model()
@@ -79,11 +80,12 @@ class SpacyMatcher(BaseMatcher):
 
             result.append(
                 Match(
+                    matcher=self.name,
                     label=self.label,
                     text=entity.text,
                     start=entity.start_char,
                     end=entity.end_char,
-                    source_labels=[entity.label_]
+                    model_label=entity.label_
                 )
             )
 

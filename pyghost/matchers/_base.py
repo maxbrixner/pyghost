@@ -25,10 +25,12 @@ class BaseMatcher():
 
     config: MatcherConfig
     logger: logging.Logger
+    name: str
     label: str
 
     def __init__(
         self,
+        name: str,
         label: str,
         config: dict[Any, Any]
     ):
@@ -37,6 +39,7 @@ class BaseMatcher():
         """
         self.config = self.MatcherConfig(**config)
         self.logger = logging.getLogger("pyghost.matchers")
+        self.name = name
         self.label = label
 
     def process(self, text: str) -> List[Match]:

@@ -26,9 +26,11 @@ class Ghost():
     _logger: logging.Logger
     _matchers: dict[str, BaseMatcher]
     _transformers: dict[str, BaseTransformer]
+    language: str
 
     def __init__(
         self,
+        language: str,
         config: Config
     ):
         """
@@ -40,8 +42,10 @@ class Ghost():
         self._matchers = {}
         self._transformers = {}
 
+        self.language = language
+
         self._initialize_matchers()
-        self._initialize_transformers()
+        self._initialize_transformers()  # todo: rather choose transformer
 
     def find_matches(self, text: str) -> List[Match]:
         """
@@ -82,7 +86,7 @@ class Ghost():
                 raise Exception(f"Matcher name "
                                 f"'{matcher.name}' is not unique.")
 
-            if not matcher.active:
+            if self.language not in matcher.languages:
                 continue
 
             self._logger.debug(
@@ -92,8 +96,11 @@ class Ghost():
             module = importlib.import_module(matcher.module)
             cls = getattr(module, matcher.cls)
             self._matchers[matcher.name] = cls(
-                label=matcher.label, config=matcher.config)
+                name=matcher.name,
+                label=matcher.label,
+                config=matcher.config)
 
+    # todo: do this more like ocr initialization
     def _initialize_transformers(self) -> None:
         """
         Intitialize all active transformers once. 
@@ -104,9 +111,6 @@ class Ghost():
             if transformer.name in self._transformers:
                 raise Exception(f"Transformer name "
                                 f"'{transformer.name}' is not unique.")
-
-            if not transformer.active:
-                continue
 
             if len(self._transformers) > 0:
                 raise Exception(f"Only one transformer can be active "

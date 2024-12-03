@@ -68,25 +68,31 @@ python -m pyghost <command> --help
 The most simple way to use pyghost is to enter text directly.
 
 ```bash
-python -m pyghost text "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. Dublin is so beautiful this time of the year."
+python -m pyghost text <language> <text>
+```
+
+For example
+
+```bash
+python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. Dublin is so beautiful this time of the year."
 ```
 
 The output should look somewhat like this:
 
 ```
-My name <multiple1>, I was born in <location1>, I work for <organization1>, and my email is <email1>. <location1> is so beautiful this time of the year.
+My name is <person1>, I was born in Dublin, I work for <organization1>, and my email is <email1>. Dublin is so beautiful this time of the year.
 ```
 
 To enable a more verbose output, you can print debug information.
 
 ```bash
-python -m pyghost text "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. Dublin is so beautiful this time of the year." --log DEBUG
+python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. Dublin is so beautiful this time of the year." --log DEBUG
 ```
 
 You can also specify the location of a custom config file.
 
 ```bash
-python -m pyghost text "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. Dublin is so beautiful this time of the year." --config config.json
+python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. Dublin is so beautiful this time of the year." --config config.json
 ```
 
 If you do not specify a config file, the default configuration in ``config/default.json`` will be used. To create your own configuration, just copy the default configuration and edit it using any text editor. See the chapter on configuration for details.
@@ -94,7 +100,7 @@ If you do not specify a config file, the default configuration in ``config/defau
 It is also possible to export the mapping table as a json file. This file will contain all matches and transformations.
 
 ```bash
-python -m pyghost text "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. Dublin is so beautiful this time of the year." --export output.json
+python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. Dublin is so beautiful this time of the year." --export output.json
 ```
 
 ### 2.2 Doc Command

@@ -15,6 +15,9 @@ from .transformers import TransformerResult
 
 # ---------------------------------------------------------------------------- #
 
+# todo: intiitialize ocr-Provider, logger and so on once...abs
+# then provide load_document for batch processing
+
 
 class Document():
     """
@@ -24,20 +27,25 @@ class Document():
     """
     images: List[Image.Image]
     ocr: List[OcrResult]
-    config: Config
-    logger: logging.Logger
+    _config: Config
+    _logger: logging.Logger
+    language: str
 
     def __init__(
         self,
         filename: pathlib.Path,
-        config: Config
+        language: str,
+        config: Config,
+        ocr_provider: Optional[str] = None
     ):
         self._config = config
         self._logger = logging.getLogger("pyghost.document")
 
         self._load_document(filename=filename)
 
-        self._retrieve_ocr()
+        self.language = language
+
+        self._retrieve_ocr(provider=ocr_provider)
 
     def get_text(self) -> List[str]:
         result = []
@@ -76,9 +84,9 @@ class Document():
             raise Exception(f"Unable to open image file "
                             f"'{filename.suffix}'.")
 
-    def _retrieve_ocr(self) -> OcrResult:
+    def _retrieve_ocr(self, provider: Optional[str] = None) -> OcrResult:
         self.ocr = []
-        ocr = self._initialize_ocr()
+        ocr = self._initialize_ocr(provider=provider)
 
         for page, image in enumerate(self.images):
             result = ocr.process_image(
@@ -87,21 +95,36 @@ class Document():
             )
             self.ocr.append(result)
 
-    def _initialize_ocr(self) -> BaseOcr:
+    def _initialize_ocr(self, provider: Optional[str] = None) -> BaseOcr:
         """
         Intitialize an ocr provider. The first active provider will be used.
         """
         for ocr in self._config.ocr:
-            if not ocr.active:
+            if provider and provider == ocr.name:
+                self._logger.debug(
+                    f"Initializing ocr provider '{ocr.name}'.")
+
+                module = importlib.import_module(ocr.module)
+                cls = getattr(module, ocr.cls)
+
+                return cls(config=ocr.config)
+
+            if self.language not in ocr.languages:
                 continue
 
-            self._logger.debug(
-                f"Initializing ocr provider '{ocr.name}'.")
+            if not provider:
+                self._logger.warning(
+                    f"No OCR provider specified, defaulting to '{ocr.name}'."
+                )
 
-            module = importlib.import_module(ocr.module)
-            cls = getattr(module, ocr.cls)
+                module = importlib.import_module(ocr.module)
+                cls = getattr(module, ocr.cls)
 
-            return cls(config=ocr.config)
+                return cls(config=ocr.config)
+
+        raise Exception(
+            f"No suitable OCR provider for language '{self.language}' found. "
+            f" Please check your configuration.")
 
     def manipulate_page(
         self,
