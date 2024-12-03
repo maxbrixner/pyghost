@@ -106,7 +106,7 @@ python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for
 ### 2.2 Doc Command
 
 ```bash
-python -m pyghost doc test/document1.pdf
+python -m pyghost doc en test/document1EN.pdf
 ```
 
 ### 2.3 S3 Command

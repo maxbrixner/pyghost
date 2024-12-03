@@ -95,7 +95,7 @@
             "config": {
                 "model": "en_core_web_sm",
                 "labels": [
-                    "LOC"
+                    "GPE"
                 ]
             }
         },

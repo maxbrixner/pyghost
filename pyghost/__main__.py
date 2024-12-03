@@ -7,7 +7,7 @@ import sys
 import pathlib
 import json
 import pydantic
-from typing import Any, Optional
+from typing import Any, Optional, List
 
 # ---------------------------------------------------------------------------- #
 
@@ -81,7 +81,7 @@ def export_to_json(
     suffix: Optional[str] = None
 ) -> None:
     """
-    Save all matches to a json file.
+    Save a pydantic model to a json file.
     """
     if suffix:
         filename = filename.with_stem(f"{filename.stem}{suffix}")
@@ -101,7 +101,7 @@ def text(
     export: Optional[pathlib.Path] = None
 ) -> None:
     """
-    Process a text string.
+    Pseudonymize or anonymize a text.
     """
     setup_logging(level=log)
     config = load_config(configfile=config)
@@ -129,7 +129,7 @@ def text(
 @app.command()
 def doc(
     language: str,
-    document: pathlib.Path,
+    documents: List[pathlib.Path],
     log: LogLevel = LogLevel.INFO,
     config: Optional[pathlib.Path] = None,
     export: Optional[pathlib.Path] = None,
@@ -146,27 +146,31 @@ def doc(
         language=language,
         config=config
     )
-    document = Document(
-        filename=document,
+
+    doc = Document(
         language=language,
         config=config,
-        ocr_provider=ocr)
+        ocr_provider=ocr
+    )
 
-    for page, text in enumerate(document.get_text()):
-        matches = ghost.find_matches(text=text)
+    for document in documents:
+        doc.load(document)
 
-        result = ghost.transform_text(text=text, matches=matches)
+        for page, text in enumerate(doc.get_text()):
+            matches = ghost.find_matches(text=text)
 
-        if export:
-            export_to_json(
-                object=result,
-                filename=export,
-                suffix=str(page)
-            )
+            result = ghost.transform_text(text=text, matches=matches)
 
-        document.manipulate_page(page=page, transformer=result)
+            if export:  # todo: gets overwritten when using multiple files
+                export_to_json(
+                    object=result,
+                    filename=export,
+                    suffix=str(page)
+                )
 
-        print(result.transformed_text)
+            doc.manipulate_page(page=page, transformer=result)
+
+            print(f"{document} page {page}\n{result.transformed_text}")
 
 # ---------------------------------------------------------------------------- #
 
@@ -179,6 +183,7 @@ def s3(
     Process an AWS S3 document or folder (pdf, jpg, png, or tiff).
     """
     setup_logging(level=log)
+    pass  # todo
 
 
 # ---------------------------------------------------------------------------- #

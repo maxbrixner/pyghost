@@ -30,22 +30,23 @@ class Document():
     _config: Config
     _logger: logging.Logger
     language: str
+    ocr_provider: BaseOcr
 
     def __init__(
         self,
-        filename: pathlib.Path,
         language: str,
         config: Config,
         ocr_provider: Optional[str] = None
     ):
+        self.images = []
+        self.ocr = []
+
         self._config = config
         self._logger = logging.getLogger("pyghost.document")
 
-        self._load_document(filename=filename)
-
         self.language = language
 
-        self._retrieve_ocr(provider=ocr_provider)
+        ocr_provider = self._initialize_ocr(provider=ocr_provider)
 
     def get_text(self) -> List[str]:
         result = []
@@ -55,7 +56,7 @@ class Document():
             )
         return result
 
-    def _load_document(self, filename: pathlib.Path) -> None:
+    def load(self, filename: pathlib.Path) -> None:
         if not filename.is_file():
             raise Exception(f"Cannot find file '{filename}'.")
 
@@ -67,6 +68,8 @@ class Document():
             self._load_pdf(filename=filename)
         else:
             self._load_image(filename=filename)
+
+        self._retrieve_ocr()
 
     def _load_pdf(self, filename: pathlib.Path) -> None:
         self.images = pdf2image.convert_from_path(filename)
@@ -86,18 +89,18 @@ class Document():
 
     def _retrieve_ocr(self, provider: Optional[str] = None) -> OcrResult:
         self.ocr = []
-        ocr = self._initialize_ocr(provider=provider)
 
         for page, image in enumerate(self.images):
-            result = ocr.process_image(
+            result = self.ocr_provider.process_image(
                 image=image,
                 page_increment=page
             )
             self.ocr.append(result)
 
-    def _initialize_ocr(self, provider: Optional[str] = None) -> BaseOcr:
+    def _initialize_ocr(self, provider: Optional[str] = None) -> None:
         """
-        Intitialize an ocr provider. The first active provider will be used.
+        Intitialize an ocr provider. The first active provider that fits
+        the language, will be used.
         """
         for ocr in self._config.ocr:
             if provider and provider == ocr.name:
@@ -107,7 +110,8 @@ class Document():
                 module = importlib.import_module(ocr.module)
                 cls = getattr(module, ocr.cls)
 
-                return cls(config=ocr.config)
+                self.ocr_provider = cls(config=ocr.config)
+                return
 
             if self.language not in ocr.languages:
                 continue
@@ -120,7 +124,8 @@ class Document():
                 module = importlib.import_module(ocr.module)
                 cls = getattr(module, ocr.cls)
 
-                return cls(config=ocr.config)
+                self.ocr_provider = cls(config=ocr.config)
+                return
 
         raise Exception(
             f"No suitable OCR provider for language '{self.language}' found. "
