@@ -29,8 +29,14 @@ class OcrConfig(pydantic.BaseModel):
     languages: List[str]
     config: dict[Any, Any] = {}
 
+class DocumentConfig(pydantic.BaseModel):
+    highlighter_color: str
+    text_color: str
+    max_font_size: int
+    font: str
 
 class Config(pydantic.BaseModel):
+    document: DocumentConfig
     ocr: List[OcrConfig] = []
     matchers: List[MatcherConfig] = []
     transformers: List[TransformerConfig] = []

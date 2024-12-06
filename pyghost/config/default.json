@@ -1,4 +1,10 @@
 {
+    "document": {
+        "highlighter_color": "#000000",
+        "text_color": "#ffffff",
+        "max_font_size": 16,
+        "font": "pyghost/fonts/Roboto-Regular.ttf"
+    },
     "ocr": [
         {
             "name": "tesseractEN",
@@ -145,6 +151,21 @@
             "config": {
                 "patterns": [
                     "\\(\\+?[\\d]{2,3}\\)[ \\-][\\d]{3,6}[ \\-][\\d]{3,8}"
+                ]
+            }
+        },
+        {
+            "name": "IbanMatcher",
+            "label": "phone",
+            "module": "pyghost.matchers",
+            "cls": "RegexMatcher",
+            "languages": [
+                "en",
+                "de"
+            ],
+            "config": {
+                "patterns": [
+                    "[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?"
                 ]
             }
         }

@@ -9,15 +9,11 @@ import importlib
 from PIL import Image, ImageDraw, ImageFont
 from typing import Any, List, Optional
 
-from .models import Config
+from .models import Config, Coordinates
 from .ocr import BaseOcr, OcrResult
 from .transformers import TransformerResult
 
 # ---------------------------------------------------------------------------- #
-
-# todo: intiitialize ocr-Provider, logger and so on once...abs
-# then provide load_document for batch processing
-
 
 class Document():
     """
@@ -143,8 +139,6 @@ class Document():
                 if transformation.match.ignore:
                     continue
 
-                # check here if word overlaps with transformation
-
                 if not ((word.start >= transformation.match.start
                          and word.start < transformation.match.end) or
                         (word.end > transformation.match.start
@@ -153,10 +147,16 @@ class Document():
 
                 self.draw_rectangle(
                     draw=draw,
-                    left=word.coordinates.left,
-                    top=word.coordinates.top,
-                    width=word.coordinates.width,
-                    height=word.coordinates.height
+                    coordinates=word.coordinates,
+                    color=self._config.document.highlighter_color
+                )
+
+                self.add_text_to_rectangle(
+                    draw=draw,
+                    coordinates=word.coordinates,
+                    text=transformation.replacement,
+                    color=self._config.document.text_color,
+                    max_font_size=self._config.document.max_font_size
                 )
 
         self.images[page].save("output.jpg")
@@ -164,17 +164,49 @@ class Document():
     def draw_rectangle(
         self,
         draw: ImageDraw.Draw,
-        left: int,
-        top: int,
-        width: int,
-        height: int,
+        coordinates: Coordinates,
         color: str = "#000000"
     ) -> None:
-        draw.rectangle(
-            [
-                (left, top),
-                (left+width, top+height)
-            ],
-            fill=color)
+        shape = (coordinates.left,
+                coordinates.top,
+                coordinates.left+coordinates.width,
+                coordinates.top+coordinates.height)
+        draw.rectangle(xy=shape, fill=color)
+
+    def add_text_to_rectangle(
+        self,
+        draw: ImageDraw.Draw,
+        coordinates: Coordinates,
+        text: str,
+        color: str = "#ffffff",
+        max_font_size: int = 16
+    ) -> None:
+        shape = (coordinates.left,
+                coordinates.top,
+                coordinates.left+coordinates.width,
+                coordinates.top+coordinates.height)
+
+        font_size = max_font_size
+        font_file = pathlib.Path(self._config.document.font)
+        font = ImageFont.truetype(font_file, font_size)
+
+        while True:
+            textbox =  draw.textbbox((0,0),text, font=font)
+            if textbox[2] <= coordinates.width and textbox[3] <= coordinates.height:
+                break
+
+            if font_size==1:
+                self._logger.error(f"Could not fit text '{text}' into textbox.")
+                return
+
+            font_size -= 1
+            font = ImageFont.truetype(font_file, font_size)
+
+        draw.text(
+            xy=(coordinates.left, coordinates.top),
+            text=text,
+            font=font,
+            fill=color
+        )    
 
 # ---------------------------------------------------------------------------- #
