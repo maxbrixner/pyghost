@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 package_name = "pyghost"
 version = "0.1.0"
-description = "A simple library and cli tool to pseudonymize and anonymize documents"
+description = "A simple library and CLI tool to pseudonymize and anonymize documents"
 author = "Max Brixner"
 author_email = "max.brixner@allianz.de"
 

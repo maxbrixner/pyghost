@@ -132,6 +132,21 @@
                     }
                 ]
             }
+        },
+        {
+            "name": "PhoneMatcher",
+            "label": "phone",
+            "module": "pyghost.matchers",
+            "cls": "RegexMatcher",
+            "languages": [
+                "en",
+                "de"
+            ],
+            "config": {
+                "patterns": [
+                    "\\(\\+?[\\d]{2,3}\\)[ \\-][\\d]{3,6}[ \\-][\\d]{3,8}"
+                ]
+            }
         }
     ],
     "transformers": [

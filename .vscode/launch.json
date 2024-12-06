@@ -8,7 +8,7 @@
             "module": "pyghost",
             "args": [
                 "text",
-                "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com",
+                "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. Dublin is so beautiful this time of the year.",
                 "--log",
                 "DEBUG"
             ]

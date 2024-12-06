@@ -145,6 +145,12 @@ class Document():
 
                 # check here if word overlaps with transformation
 
+                if not ((word.start >= transformation.match.start
+                         and word.start < transformation.match.end) or
+                        (word.end > transformation.match.start
+                         and word.end <= transformation.match.end)):
+                    continue
+
                 self.draw_rectangle(
                     draw=draw,
                     left=word.coordinates.left,
