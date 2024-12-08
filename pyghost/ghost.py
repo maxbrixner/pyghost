@@ -25,13 +25,14 @@ class Ghost():
     _config: Config
     _logger: logging.Logger
     _matchers: dict[str, BaseMatcher]
-    _transformers: dict[str, BaseTransformer]
+    _transformer: BaseTransformer
     language: str
 
     def __init__(
         self,
         language: str,
-        config: Config
+        config: Config,
+        transformer: Optional[str] = None
     ):
         """
         Initialize the Pseudomizer.
@@ -40,12 +41,12 @@ class Ghost():
         self._logger = logging.getLogger("pyghost.ghost")
 
         self._matchers = {}
-        self._transformers = {}
+        self._transformer = self._initialize_transformer(
+            provider=transformer)
 
         self.language = language
 
         self._initialize_matchers()
-        self._initialize_transformers()  # todo: rather choose transformer
 
     def find_matches(self, text: str) -> List[Match]:
         """
@@ -67,11 +68,7 @@ class Ghost():
         text: str,
         matches: List[Match]
     ) -> TransformerResult:
-
-        for name, transformer in self._transformers.items():
-            self._logger.debug(f"Processing transformer '{name}'.")
-
-            result = transformer.process(text=text, matches=matches)
+        result = self.transformer.process(text=text, matches=matches)
 
         return result
 
@@ -100,31 +97,36 @@ class Ghost():
                 label=matcher.label,
                 config=matcher.config)
 
-    # todo: do this more like ocr initialization
-    def _initialize_transformers(self) -> None:
+    def _initialize_transformer(self, provider: Optional[str] = None) -> None:
         """
-        Intitialize all active transformers once. 
+        Intitialize a transformer. If no provider is passed, the first
+        transformer found will be used.
         """
-        self._transformers = {}
-
         for transformer in self._config.transformers:
-            if transformer.name in self._transformers:
-                raise Exception(f"Transformer name "
-                                f"'{transformer.name}' is not unique.")
+            if provider and provider == transformer.name:
+                self._logger.debug(
+                    f"Initializing transformer '{transformer.name}'.")
 
-            if len(self._transformers) > 0:
-                raise Exception(f"Only one transformer can be active "
-                                f"at the same time. You can activate and "
-                                f"deactivate controlers by setting active="
-                                f"true/false in the configuration.")
+                module = importlib.import_module(transformer.module)
+                cls = getattr(module, transformer.cls)
 
-            self._logger.debug(
-                f"Initializing transformer '{transformer.name}' "
-                f"as '{transformer.cls}'.")
+                self.transformer = cls(config=transformer.config)
+                return
 
-            module = importlib.import_module(transformer.module)
-            cls = getattr(module, transformer.cls)
-            self._transformers[transformer.name] = cls(
-                config=transformer.config)
+            if not provider:
+                self._logger.warning(
+                    f"No transformer provider specified, defaulting to "
+                    f"'{transformer.name}'."
+                )
+
+                module = importlib.import_module(transformer.module)
+                cls = getattr(module, transformer.cls)
+
+                self.transformer = cls(config=transformer.config)
+                return
+
+        raise Exception(
+            f"No suitable transformer found. "
+            f"Please check your configuration.")
 
 # ---------------------------------------------------------------------------- #

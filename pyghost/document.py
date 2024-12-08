@@ -15,6 +15,7 @@ from .transformers import TransformerResult
 
 # ---------------------------------------------------------------------------- #
 
+
 class Document():
     """
     The Document class reads images or PDF documents (which will be converted
@@ -125,7 +126,7 @@ class Document():
 
         raise Exception(
             f"No suitable OCR provider for language '{self.language}' found. "
-            f" Please check your configuration.")
+            f"Please check your configuration.")
 
     def manipulate_page(
         self,
@@ -168,9 +169,9 @@ class Document():
         color: str = "#000000"
     ) -> None:
         shape = (coordinates.left,
-                coordinates.top,
-                coordinates.left+coordinates.width,
-                coordinates.top+coordinates.height)
+                 coordinates.top,
+                 coordinates.left+coordinates.width,
+                 coordinates.top+coordinates.height)
         draw.rectangle(xy=shape, fill=color)
 
     def add_text_to_rectangle(
@@ -182,21 +183,22 @@ class Document():
         max_font_size: int = 16
     ) -> None:
         shape = (coordinates.left,
-                coordinates.top,
-                coordinates.left+coordinates.width,
-                coordinates.top+coordinates.height)
+                 coordinates.top,
+                 coordinates.left+coordinates.width,
+                 coordinates.top+coordinates.height)
 
         font_size = max_font_size
         font_file = pathlib.Path(self._config.document.font)
         font = ImageFont.truetype(font_file, font_size)
 
         while True:
-            textbox =  draw.textbbox((0,0),text, font=font)
+            textbox = draw.textbbox((0, 0), text, font=font)
             if textbox[2] <= coordinates.width and textbox[3] <= coordinates.height:
                 break
 
-            if font_size==1:
-                self._logger.error(f"Could not fit text '{text}' into textbox.")
+            if font_size == 1:
+                self._logger.error(f"Could not fit text '{
+                                   text}' into textbox.")
                 return
 
             font_size -= 1
@@ -207,6 +209,6 @@ class Document():
             text=text,
             font=font,
             fill=color
-        )    
+        )
 
 # ---------------------------------------------------------------------------- #

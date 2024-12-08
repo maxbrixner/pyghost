@@ -156,7 +156,7 @@
         },
         {
             "name": "IbanMatcher",
-            "label": "phone",
+            "label": "iban",
             "module": "pyghost.matchers",
             "cls": "RegexMatcher",
             "languages": [
@@ -172,13 +172,24 @@
     ],
     "transformers": [
         {
-            "name": "LabelTransformer",
+            "name": "Label",
             "module": "pyghost.transformers",
             "cls": "LabelTransformer",
             "config": {
                 "prefix": "<",
                 "suffix": ">",
                 "memory": true
+            }
+        },
+        {
+            "name": "Randomizer",
+            "module": "pyghost.transformers",
+            "cls": "RandomizerTransformer",
+            "config": {
+                "alpha": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "digit": "0123456789",
+                "preserve": "@ .,+-_()#\r\t\n",
+                "memory": false
             }
         }
     ]

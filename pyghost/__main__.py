@@ -98,7 +98,8 @@ def text(
     text: str,
     log: LogLevel = LogLevel.INFO,
     config: Optional[pathlib.Path] = None,
-    export: Optional[pathlib.Path] = None
+    export: Optional[pathlib.Path] = None,
+    transformer: Optional[str] = None
 ) -> None:
     """
     Pseudonymize or anonymize a text.
@@ -108,7 +109,8 @@ def text(
 
     ghost = Ghost(
         language=language,
-        config=config
+        config=config,
+        transformer=transformer
     )
 
     matches = ghost.find_matches(text=text)
@@ -144,7 +146,8 @@ def doc(
 
     ghost = Ghost(
         language=language,
-        config=config
+        config=config,
+        transformer=transformer
     )
 
     doc = Document(
