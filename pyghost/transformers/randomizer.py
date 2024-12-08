@@ -17,7 +17,8 @@ from ..models import Match, TransformerResult, Transformation
 class RandomizerTransformer(BaseTransformer):
     """
     The randomizer transformer replaces entities by random strings of the
-    same length while preserving some structural integrity.
+    same length while preserving some structural integrity
+    (e.g. case sensitivity).
     """
     class TransformerConfig(pydantic.BaseModel):
         """
@@ -29,24 +30,20 @@ class RandomizerTransformer(BaseTransformer):
         preserve: str = "@ .,+-_()#\r\t\n"
         memory: bool = False
 
-    def __init__(self, config: dict[Any, Any]) -> None:
-        """
-        Initialize the label transformer.
-        """
-        super().__init__(config=config)
-
     def create_transformations(
         self,
         matches: List[Match]
     ) -> List[Transformation]:
         """
         Create transformations by replacing matches with their respective
-        labels. If memory is active, labels will be counted to give same
-        entities the same labels.
+        labels. If memory is active, same words will always be replaced by
+        the same random letters.
         """
         transformations = []
         for match in matches:
             for word in match.touched:
+                self.clean_word(word)
+
                 replacement = self.from_memory(
                     label=match.label, text=word.text)
 
@@ -65,14 +62,12 @@ class RandomizerTransformer(BaseTransformer):
                     )
                 )
 
-        print("mmmmmm", self.memory)
-
         return transformations
 
     def randomize_text(self, text: str) -> str:
         """
         Randomize a string by replacing every character by a random character
-        from a set.
+        from a given set.
         """
         result = ""
         for char in text:

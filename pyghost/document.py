@@ -47,16 +47,6 @@ class Document():
 
         ocr_provider = self._initialize_ocr(provider=ocr_provider)
 
-    def get_text(self) -> List[str]:
-        """
-        """
-        result = []
-        for page, ocr in enumerate(self.ocr):
-            result.append(
-                ocr.text
-            )
-        return result
-
     def load(self, filename: pathlib.Path) -> None:
         """
         Load a document from a file.
@@ -151,32 +141,27 @@ class Document():
     ) -> None:
         draw = ImageDraw.Draw(self.images[page])
 
-        for word in self.ocr[page].words:
-            for transformation in transformer.transformations:
-                if transformation.match.ignore:
-                    continue
+        for transformation in transformer.transformations:
+            # todo
+            # if transformation.match.ignore:
+            #    continue
 
-                if not ((word.start >= transformation.match.start
-                         and word.start < transformation.match.end) or
-                        (word.end > transformation.match.start
-                         and word.end <= transformation.match.end)):
-                    continue
+            self.draw_rectangle(
+                draw=draw,
+                coordinates=transformation.word.coordinates,
+                color=self._config.document.highlighter_color
+            )
 
-                self.draw_rectangle(
-                    draw=draw,
-                    coordinates=word.coordinates,
-                    color=self._config.document.highlighter_color
-                )
+            self.add_text_to_rectangle(
+                draw=draw,
+                coordinates=transformation.word.coordinates,
+                text=transformation.replacement,
+                color=self._config.document.text_color,
+                max_font_size=self._config.document.max_font_size
+            )
 
-                self.add_text_to_rectangle(
-                    draw=draw,
-                    coordinates=word.coordinates,
-                    text=transformation.replacement,
-                    color=self._config.document.text_color,
-                    max_font_size=self._config.document.max_font_size
-                )
-
-        self.images[page].save("output.jpg")
+        # todo
+        self.images[page].save(f"output{page}.jpg")
 
     def draw_rectangle(
         self,

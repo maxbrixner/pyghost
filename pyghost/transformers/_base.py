@@ -7,7 +7,7 @@ from typing import Any, List, Optional
 
 # ---------------------------------------------------------------------------- #
 
-from ..models import Match, Transformation, TransformerResult
+from ..models import Match, Transformation, TransformerResult, Word
 
 # ---------------------------------------------------------------------------- #
 
@@ -58,8 +58,6 @@ class BaseTransformer():
 
         transformations = self.create_transformations(matches=matches)
 
-        print(transformations)
-
         transformed_text = self.apply_transformations(
             text=text,
             transformations=transformations
@@ -70,6 +68,19 @@ class BaseTransformer():
             transformed_text=transformed_text,
             transformations=transformations
         )
+
+    def clean_word(
+        self,
+        word: Word
+    ) -> None:
+        """
+
+        """
+        for suffix in [',', '.', '!', '?', ';']:
+            if word.text.endswith(suffix):
+                word.text = word.text[:len(word.text)-1]
+                word.end -= 1
+                break
 
     def add_to_memory(
         self,

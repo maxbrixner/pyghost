@@ -80,7 +80,7 @@ python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for
 The output should look somewhat like this:
 
 ```
-My name is <person1>, I was born in <location1>, I work for <organization1>, and my email is <email1>. My wife's name is <person2>. <location2> is so beautiful this time of the year.
+My name is <person> <person>, I was born in <location>, I work for <organization>, and my email is <email>. My wife's name is <person> <person>. <location> is so beautiful this time of the year.
 ```
 
 To enable a more verbose output, you can print debug information.

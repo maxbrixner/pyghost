@@ -98,3 +98,10 @@ class TransformerResult(pydantic.BaseModel):
     transformations: List[Transformation]
 
 # ---------------------------------------------------------------------------- #
+
+
+class GhostResult(pydantic.BaseModel):
+    matches: List[Match]
+    transformation: TransformerResult
+
+# ---------------------------------------------------------------------------- #

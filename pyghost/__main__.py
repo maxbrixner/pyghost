@@ -14,7 +14,7 @@ from typing import Any, Optional, List
 from .ghost import Ghost
 from .text import Text
 from .document import Document
-from .models import Config
+from .models import Config, GhostResult
 
 # ---------------------------------------------------------------------------- #
 
@@ -118,15 +118,18 @@ def text(
 
     matches = ghost.find_matches(text=text, words=words)
 
-    result = ghost.transform_text(text=text, matches=matches)
+    transformation = ghost.transform_text(text=text, matches=matches)
 
     if export:
         export_to_json(
-            object=result,
+            object=GhostResult(
+                matches=matches,
+                transformation=transformation
+            ),
             filename=export
         )
 
-    print(result.transformed_text)
+    print(transformation.transformed_text)
 
 # ---------------------------------------------------------------------------- #
 
@@ -162,10 +165,10 @@ def doc(
     for document in documents:
         doc.load(document)
 
-        for page, text in enumerate(doc.get_text()):
-            matches = ghost.find_matches(text=text)
+        for page, ocr in enumerate(doc.ocr):
+            matches = ghost.find_matches(text=ocr.text, words=ocr.words)
 
-            result = ghost.transform_text(text=text, matches=matches)
+            result = ghost.transform_text(text=ocr.text, matches=matches)
 
             if export:  # todo: gets overwritten when using multiple files
                 export_to_json(

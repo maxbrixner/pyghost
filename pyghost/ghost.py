@@ -66,8 +66,6 @@ class Ghost():
 
         self.get_touched_words(matches=matches, words=words)
 
-        print("MATCHES\n", matches)
-
         return matches
 
     def get_touched_words(

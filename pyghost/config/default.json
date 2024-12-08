@@ -2,7 +2,7 @@
     "document": {
         "highlighter_color": "#000000",
         "text_color": "#ffffff",
-        "max_font_size": 16,
+        "max_font_size": 100,
         "font": "pyghost/fonts/Roboto-Regular.ttf"
     },
     "ocr": [
@@ -177,8 +177,7 @@
             "cls": "LabelTransformer",
             "config": {
                 "prefix": "<",
-                "suffix": ">",
-                "memory": true
+                "suffix": ">"
             }
         },
         {
