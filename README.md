@@ -152,7 +152,7 @@ Pyghost provides pre-configured transformers for various replacement strategies:
 
 |Name|Description|
 |-|-|
-|Label|Replaces each matched word with a label, like "<person>" for names.|
+|Label|Replaces each matched word with a label, like "person" for names.|
 |Randomizer|Generates random letters to replace matched words while preserving case sensitivity and specific characters (spaces, punctuation).|
 
 ### 2.5 Enable Logging

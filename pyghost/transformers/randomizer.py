@@ -44,8 +44,11 @@ class RandomizerTransformer(BaseTransformer):
             for word in match.touched:
                 (clean_text, suffix) = self.get_suffix(word.text)
 
-                replacement = self.from_memory(
-                    label=match.label, text=clean_text)
+                if self.config.memory:
+                    replacement = self.from_memory(
+                        label=match.label, text=clean_text)
+                else:
+                    replacement = None
 
                 if replacement is None:
                     replacement = self.randomize_text(clean_text)
