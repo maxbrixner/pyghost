@@ -205,6 +205,19 @@
                 "preserve": "@ .,+-_()#\r\t\n",
                 "memory": true
             }
+        },
+        {
+            "name": "Faker",
+            "module": "pyghost.transformers",
+            "cls": "FakerTransformer",
+            "config": {
+                "files": {
+                    "person": "pyghost/data/fake-name.txt",
+                    "organization": "pyghost/data/fake-organization.txt",
+                    "location": "pyghost/data/fake-location.txt"
+                },
+                "memory": true
+            }
         }
     ]
 }
