@@ -90,6 +90,7 @@ class Match(pydantic.BaseModel):
 class Transformation(pydantic.BaseModel):
     word: Word
     replacement: str
+    applied: bool = False
 
 
 class TransformerResult(pydantic.BaseModel):

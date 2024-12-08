@@ -118,14 +118,14 @@ class BaseTransformer():
         """
         text = ""
         for word in words:
-
             if len(text) > 0:
                 text += " "
 
             transformed = False
             for transformation in transformations:
-
                 if transformation.word != word:
+                    # this will skip already transformed words, since
+                    # then the original word will have changed
                     continue
 
                 self.logger.debug(f"Applying transformation "
@@ -135,6 +135,7 @@ class BaseTransformer():
                 word.text = transformation.replacement
 
                 text += transformation.replacement
+                transformation.applied = True
                 transformed = True
 
             if not transformed:
