@@ -9,6 +9,8 @@ import importlib
 from PIL import Image, ImageDraw, ImageFont
 from typing import Any, List, Optional
 
+# ---------------------------------------------------------------------------- #
+
 from .models import Config, Coordinates, OcrResult, TransformerResult
 from .ocr import BaseOcr
 
@@ -201,7 +203,8 @@ class Document():
 
         while True:
             textbox = draw.textbbox((0, 0), text, font=font)
-            if textbox[2] <= coordinates.width and textbox[3] <= coordinates.height:
+            if textbox[2] <= coordinates.width and \
+                    textbox[3] <= coordinates.height:
                 break
 
             if font_size == 1:

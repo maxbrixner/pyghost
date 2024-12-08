@@ -69,6 +69,13 @@ class BaseTransformer():
             transformations=transformations
         )
 
+    def get_suffix(self, text: str) -> (str, str):
+        for suffix in [',', '.', '!', '?', ';']:
+            if text.endswith(suffix):
+                return (text[:len(text)-1], suffix)
+
+        return (text, "")
+
     def clean_word(
         self,
         word: Word

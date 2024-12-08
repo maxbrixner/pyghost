@@ -42,23 +42,23 @@ class RandomizerTransformer(BaseTransformer):
         transformations = []
         for match in matches:
             for word in match.touched:
-                self.clean_word(word)
+                (clean_text, suffix) = self.get_suffix(word.text)
 
                 replacement = self.from_memory(
-                    label=match.label, text=word.text)
+                    label=match.label, text=clean_text)
 
                 if replacement is None:
-                    replacement = self.randomize_text(word.text)
+                    replacement = self.randomize_text(clean_text)
                     self.add_to_memory(
                         label=match.label,
-                        text=word.text,
+                        text=clean_text,
                         replacement=replacement
                     )
 
                 transformations.append(
                     Transformation(
                         word=word,
-                        replacement=replacement
+                        replacement=f"{replacement}{suffix}"
                     )
                 )
 
