@@ -94,12 +94,14 @@ class Ghost():
     def transform_text(
         self,
         text: str,
-        matches: List[Match]
+        matches: List[Match],
+        words: List[Word]
     ) -> TransformerResult:
         """
         Call the transformer to #todo
         """
-        result = self.transformer.process(text=text, matches=matches)
+        result = self.transformer.process(
+            text=text, matches=matches, words=words)
 
         return result
 

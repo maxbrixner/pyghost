@@ -115,7 +115,8 @@ def text(
 
     matches = ghost.find_matches(text=text, words=words)
 
-    transformation = ghost.transform_text(text=text, matches=matches)
+    transformation = ghost.transform_text(
+        text=text, matches=matches, words=words)
 
     if export_matches:
         export_to_json(
@@ -170,7 +171,8 @@ def doc(
         for page, ocr in enumerate(document.ocr):
             matches = ghost.find_matches(text=ocr.text, words=ocr.words)
 
-            result = ghost.transform_text(text=ocr.text, matches=matches)
+            result = ghost.transform_text(
+                text=ocr.text, matches=matches, words=ocr.words)
 
             if export_matches:  # todo: gets overwritten when using multiple files
                 export_to_json(

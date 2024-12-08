@@ -168,6 +168,21 @@
                     "[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?"
                 ]
             }
+        },
+        {
+            "name": "TestMatcher",
+            "label": "test",
+            "module": "pyghost.matchers",
+            "cls": "RegexMatcher",
+            "languages": [
+                "en",
+                "de"
+            ],
+            "config": {
+                "patterns": [
+                    "John"
+                ]
+            }
         }
     ],
     "transformers": [
