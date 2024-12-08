@@ -28,7 +28,11 @@ class BaseOcr():
         self.config = self.OcrConfig(**config)
         self.logger = logging.getLogger("pyghost.ocr")
 
-    def process_image(self, image: Image.Image) -> OcrResult:
-        pass
+    def process_image(
+        self,
+        image: Image.Image,
+        page_increment: int = 0
+    ) -> OcrResult:
+        return OcrResult(text="", words=[])
 
 # ---------------------------------------------------------------------------- #

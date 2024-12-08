@@ -47,7 +47,7 @@ class Document():
 
         self.language = language
 
-        ocr_provider = self._initialize_ocr(provider=ocr_provider)
+        self._initialize_ocr(provider=ocr_provider)
 
     def load(self, filename: pathlib.Path) -> None:
         """
@@ -96,10 +96,9 @@ class Document():
         for page, image in enumerate(self.images):
             filename_mod = filename.with_stem(
                 f"{filename.stem}_{page}")
-            with filename_mod.open("w", encoding="utf-8") as file:
-                image.save(file)
+            image.save(filename_mod)
 
-    def _retrieve_ocr(self, provider: Optional[str] = None) -> OcrResult:
+    def _retrieve_ocr(self, provider: Optional[str] = None) -> None:
         """
         Call the OCR provider to retrieve the text of an image.
         """
@@ -157,6 +156,9 @@ class Document():
             if not transformation.applied:
                 continue
 
+            if not transformation.word.coordinates:
+                continue
+
             self.draw_rectangle(
                 draw=draw,
                 coordinates=transformation.word.coordinates,
@@ -173,7 +175,7 @@ class Document():
 
     def draw_rectangle(
         self,
-        draw: ImageDraw.Draw,
+        draw: ImageDraw.ImageDraw,
         coordinates: Coordinates,
         color: str = "#000000"
     ) -> None:
@@ -185,7 +187,7 @@ class Document():
 
     def add_text_to_rectangle(
         self,
-        draw: ImageDraw.Draw,
+        draw: ImageDraw.ImageDraw,
         coordinates: Coordinates,
         text: str,
         color: str = "#ffffff",

@@ -39,8 +39,10 @@ class TesseractOcr(BaseOcr):
     def process_image(
         self,
         image: Image.Image,
-        page_increment: 0
+        page_increment: int = 0
     ) -> OcrResult:
+        assert isinstance(self.config, self.OcrConfig)
+
         boxes = pytesseract.image_to_data(
             image, output_type=pytesseract.Output.DICT, lang=self.config.lang)
 

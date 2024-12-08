@@ -3,7 +3,7 @@
 
 import pydantic
 import logging
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple
 
 # ---------------------------------------------------------------------------- #
 
@@ -73,7 +73,7 @@ class BaseTransformer():
             transformations=transformations
         )
 
-    def get_suffix(self, text: str) -> (str, str):
+    def get_suffix(self, text: str) -> Tuple[str, str]:
         """
         Return a text and it's suffix as a tuple, e.g. the text "John." will
         be returned as ("John", ".").

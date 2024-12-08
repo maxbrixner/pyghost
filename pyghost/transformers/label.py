@@ -34,6 +34,8 @@ class LabelTransformer(BaseTransformer):
         Create transformations by replacing words with their respective
         labels.
         """
+        assert isinstance(self.config, self.TransformerConfig)
+        
         transformations = []
         for match in matches:
             for index, word in enumerate(match.touched):

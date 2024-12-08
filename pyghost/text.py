@@ -10,8 +10,6 @@ from .models import Word
 
 
 class Text():
-    def __init__(self):
-        pass
 
     def get_words(self, text: str) -> List[Word]:
         # todo

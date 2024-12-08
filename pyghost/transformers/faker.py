@@ -48,6 +48,8 @@ class FakerTransformer(BaseTransformer):
         """
         Create transformations by replacing words with a random fake.
         """
+        assert isinstance(self.config, self.TransformerConfig)
+
         transformations = []
         for match in matches:
             for index, word in enumerate(match.touched):
@@ -80,6 +82,8 @@ class FakerTransformer(BaseTransformer):
         return transformations
 
     def get_fake(self, label: str, text: str) -> str:
+        assert isinstance(self.config, self.TransformerConfig)
+
         self.load_file(label=label)
 
         if label not in self.fakes:
@@ -99,6 +103,8 @@ class FakerTransformer(BaseTransformer):
         return random.choice(candidates)
 
     def load_file(self, label: str) -> None:
+        assert isinstance(self.config, self.TransformerConfig)
+
         if label in self.fakes:
             return
 
@@ -121,6 +127,8 @@ class FakerTransformer(BaseTransformer):
         Randomize a string by replacing every character by a random character
         from a given set.
         """
+        assert isinstance(self.config, self.TransformerConfig)
+
         result = ""
         for char in text:
             if char in self.config.random_preserve:

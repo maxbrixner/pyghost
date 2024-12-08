@@ -52,6 +52,8 @@ class SpacyMatcher(BaseMatcher):
         """
         Attempt to load a spacy model.
         """
+        assert isinstance(self.config, self.MatcherConfig)
+
         try:
             if not self.config.model in cache.models:
                 self.logger.debug(
@@ -68,6 +70,8 @@ class SpacyMatcher(BaseMatcher):
         """
         Use spacy to identify entities.
         """
+        assert isinstance(self.config, self.MatcherConfig)
+
         if self.model is None:
             raise Exception("Invalid spacy model.")
 

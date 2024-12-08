@@ -103,13 +103,13 @@ def text(
     Pseudonymize or anonymize a text.
     """
     setup_logging(level=log)
-    config = load_config(configfile=config)
+    configuration = load_config(configfile=config)
 
     words = Text().get_words(text=text)
 
     ghost = Ghost(
         language=language,
-        config=config,
+        config=configuration,
         transformer=transformer
     )
 
@@ -148,17 +148,17 @@ def doc(
     Process a local document (pdf, jpg, png, or tiff).
     """
     setup_logging(level=log)
-    config = load_config(configfile=config)
+    configuration = load_config(configfile=config)
 
     ghost = Ghost(
         language=language,
-        config=config,
+        config=configuration,
         transformer=transformer
     )
 
     document = Document(
         language=language,
-        config=config,
+        config=configuration,
         ocr_provider=ocr
     )
 
@@ -168,11 +168,12 @@ def doc(
     for filename in documents:
         document.load(filename=filename)
 
-        for page, ocr in enumerate(document.ocr):
-            matches = ghost.find_matches(text=ocr.text, words=ocr.words)
+        for page, doc_ocr in enumerate(document.ocr):
+            matches = ghost.find_matches(
+                text=doc_ocr.text, words=doc_ocr.words)
 
             transformation = ghost.transform_text(
-                text=ocr.text, matches=matches, words=ocr.words)
+                text=doc_ocr.text, matches=matches, words=doc_ocr.words)
 
             if export_matches:  # todo: gets overwritten when using multiple files
                 export_to_json(

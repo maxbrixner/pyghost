@@ -47,6 +47,8 @@ class RegexMatcher(BaseMatcher):
         """
         Precompile regex patterns for faster processing.
         """
+        assert isinstance(self.config, self.MatcherConfig)
+
         self.logger.debug(
             f"Compiling {len(self.config.patterns)} regex patterns.")
 
