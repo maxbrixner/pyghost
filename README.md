@@ -85,6 +85,21 @@ Output:
 My name is <person> <person>, I was born in <location>, I work for <organization>, and my email is <email>. My wife's name is <person> <person>. <location> is so beautiful this time of the year.
 ```
 
+You can switch to another transformer to replace matches by fake data instead:
+
+```bash
+python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. My wife's name is Jane Doe. Ireland is so beautiful this time of the year." --transformer FakerEN
+```
+
+Output:
+
+```
+My name is Pier Meg, I was born in Anloga, I work for Konsili, and my email is f.agnese@example.com. My wife's name is Linn Meg. Chilson is so beautiful this time of the year.
+```
+
+You can read more on transformers below.
+
+
 ### 2.2 The "doc" Command
 
 Pyghost can effectively anonymize and pseudonymize various document formats, including PDF, JPG, TIFF, and PNG. Here's a breakdown of the process:
