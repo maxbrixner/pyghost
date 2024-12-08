@@ -1,30 +1,30 @@
 >  **_WARNING_** This software employs techniques to replace personal data with pseudonyms or dummy data. However, please note that anonymization and pseudonymization are not infallible and may not entirely prevent re-identification. The software's effectiveness is influenced by factors such as the completeness and quality of your configuration, the source data, and the potential attacker's technical capabilities. We cannot guarantee complete anonymity or confidentiality of your data using this software. It is your responsibility to evaluate the risks associated with anonymization or pseudonymization and implement appropriate measures to safeguard your privacy and the privacy of others.
 
-# pyghost
+# Pyghost
 
-A simple library and CLI to pseudonymize and anonymize documents. Pyghost offers
+Pyghost is a simple tool for document anonymization and pseudonymization. It provides:
 
-- A CLI tool and a library.
-- Configurable and extendible matchers and transformers. You can write your own matchers and transformers or choose from pre-configured transformers from the pyghost library. The latter also includes Spacy-based NLP matchers.
-- Importing from and exporting to AWS S3.
-- Text-based anonymization and pseudonymization.
-- Replacing text directly in documents using AWS Textract and Pillow.
+- **Flexible Interface**: A user-friendly command-line interface (CLI) and a versatile library for seamless integration into your projects.
+- **Customizable Anonymization**: Easily configure and extend matchers and transformers to tailor your anonymization process to specific needs. Choose from built-in options, including powerful NLP-based matchers powered by Spacy.
+- **Seamless Cloud Integration**: Effortlessly import and export documents from and to AWS S3 for efficient workflow management.
+- **Comprehensive Text Anonymization**: Effectively anonymize and pseudonymize text-based documents.
+- **Advanced Document Editing**: Directly manipulate documents using OCR providers and Pillow to precisely replace sensitive information.
 
 ## 1. Installation
 
-To install pyghost, you can use pip.
+Using pip:
 
 ```bash
 pip install pyghost
 ```
 
-If pyghost is not available via pip, you can also install it from a local folder, e.g.
+Installing from a local directory:
 
 ```bash
 pip install ../pyghost
 ```
 
-If you plan to use Spacy matchers, you need to install the respective models, e.g.
+To leverage Spacy-based NLP matchers, install the desired language models:
 
 ```bash
 python -m spacy download en_core_web_sm
@@ -32,7 +32,7 @@ python -m spacy download de_core_news_sm
 ...
 ```
 
-If you plan to use Tesseract for local OCR, make sure it is installed, e.g.
+For local Optical Character Recognition (OCR) using Tesseract, ensure it's installed with the required language packs:
 
 ```bash
 sudo apt-get install tesseract-ocr
@@ -47,11 +47,11 @@ The pyghost CLI offers three commands:
 
 |Command|Description|
 |-|-|
-|text|Process direct text input|
-|doc|Process local files|
-|s3|Process files in an AWS S3 bucket|
+|text|Process text directly from the command line.|
+|doc|Process local files on your system.|
+|s3|Process files stored in an AWS S3 bucket.|
 
-You can find more information on these commands by executing
+For more detailed information on a specific command, use:
 
 ```bash
 python -m pyghost --help
@@ -65,19 +65,21 @@ python -m pyghost <command> --help
 
 ### 2.1 The "text" Command
 
-The most simple way to use pyghost is to enter text directly.
+Pyghost allows you to anonymize text directly from the command line. 
+
+Command usage:
 
 ```bash
 python -m pyghost text <language> <text>
 ```
 
-For example
+For example:
 
 ```bash
 python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. My wife's name is Jane Doe. Ireland is so beautiful this time of the year."
 ```
 
-The output should look somewhat like this:
+Output:
 
 ```
 My name is <person> <person>, I was born in <location>, I work for <organization>, and my email is <email>. My wife's name is <person> <person>. <location> is so beautiful this time of the year.
@@ -85,32 +87,34 @@ My name is <person> <person>, I was born in <location>, I work for <organization
 
 ### 2.2 The "doc" Command
 
-You can use pyghost to pseudonymize and anonymize documents. This works wor PDF, JPG, TIFF, and PNG files. In order to achieve this, pyghost will
+Pyghost can effectively anonymize and pseudonymize various document formats, including PDF, JPG, TIFF, and PNG. Here's a breakdown of the process:
 
-- Run optical character recognition (OCR) on the file.
-- Pseudonymize/Anonymize the document's text.
-- Output the transformed text.
-- Output the original document but with pseudonymized/anonymized content.
+- **Optical Character Recognition (OCR)**: Pyghost extracts text from the document using OCR.
+- **Text Anonymization/Pseudonymization**: The extracted text is processed to replace sensitive information with placeholders.
+- **Document Modification**: Pyghost overlays the original document with boxes containing the anonymized/pseudonymized text.
+- **Output**: The modified document is saved. If the source was an image file, original file format will be preserved. If the source was a PDF file, it will be converted to images.
 
-To pseudonymize/anonymize the original document, pyghost will draw a solid box over the original text and attempt to print the new text inside this box. It will automatically try to set the font size, so that the new text fits into this box.
+Command usage:
 
 ```bash
-python -m pyghost doc <language> <documents...>
+python -m pyghost doc <language> <document_paths...>
 ```
 
-For example
+For example:
 
 ```bash
 python -m pyghost doc en test/document1EN.pdf
 ```
 
-The resulting files will be saved in the same folder as the source files. If you want to save them in another directory, you can use the ``--ouput`` option, e.g.
+Output:
+
+The processed document will be saved in the same directory as the input file. The output filenames will be generated based on the original filenames and page numbers. If you want to save them in another directory, you can use the ``--output`` option, e.g.,
 
 ```bash
 python -m pyghost doc en test/document1EN.pdf --output test/output.jpg
 ```
 
-The output filename will automatically be manipulated so that it contains the original filename and page number.
+The output filename for the exported images will be automatically generated based on the original filename and page number.
 
 ### 2.3 The "s3" Command
 
@@ -118,42 +122,42 @@ todo
 
 ### 2.4 Switching the OCR Provider
 
-If you want to switch to another OCR provider, you can use the ``--ocr`` option, e.g.
+By default, Pyghost uses the first available OCR provider that matches the document language. However, you can explicitly choose an OCR provider using the ``--ocr`` option:
 
 ```bash
 python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. My wife's name is Jane Doe. Ireland is so beautiful this time of the year." --ocr tesseractEN
 ```
 
-If the ``--ocr`` is not set, the first OCR provider that matches the given language is used. You can configure OCR providers in the [Configuration](pyghost/config/default.json).
+You can configure OCR providers in the [configuration](pyghost/config/default.json).
 
-The following OCR providers are preconfigured:
+Pyghost offers several pre-configured options:
 
 |Name|Description|
 |-|-|
-|TesseractEN|Google's Tesseract OCR (configured for English documents) runs locally and does not require any credentials. Please make sure that tesseract and the language packs are installed (see "Installation").
-|TesseractDE|Google's Tesseract OCR (configured for German documents) runs locally and does not require any credentials. Please make sure that tesseract and the language packs are installed (see "Installation").
-|Textract|Amazon's Textract OCR. This requires your AWS credentials as environment variables. See [the sample env-File](.env.example) for details.|
+|TesseractEN|Google's Tesseract OCR for English documents. It runs locally and requires no additional setup beyond Tesseract and language pack installation (refer to the "Installation" section).
+|TesseractDE|Similar to TesseractEN, but configured for German documents.
+|Textract|Amazon's Textract OCR service. This option requires your AWS credentials set as environment variables. Refer to the provided [sample env-file](.env.example) file for details.|
 
 ### 2.4 Switching the Text Transformer
 
-The text transformer controls how your matches are replaced in the text or documents. If you want to change how text is replaced, you can use the ``--transformer`` option, e.g.
+Pyghost allows you to control how matched text is replaced during anonymization/pseudonymization. You can achieve this by specifying a transformer using the ``--transformer`` option:
 
 ```bash
 python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. My wife's name is Jane Doe. Ireland is so beautiful this time of the year." --transformer Randomizer
 ```
 
- If the ``--transformer`` is not set, the first transformer in your configuration is used. You can configure transformers in the [Configuration](pyghost/config/default.json).
+If no transformer is specified, Pyghost will use the first transformer defined in your [Configuration](pyghost/config/default.json).
 
-The following transformers are preconfigured:
+Pyghost provides pre-configured transformers for various replacement strategies:
 
 |Name|Description|
 |-|-|
-|Label|Replaces each word with its label, e.g. "John" by "<person>".
-|Randomizer|Replaces each word with random letters. The Randomizer is case sensitive and preserves certain letters like spaces or punctuation.|
+|Label|Replaces each matched word with a label, like "<person>" for names.|
+|Randomizer|Generates random letters to replace matched words while preserving case sensitivity and specific characters (spaces, punctuation).|
 
 ### 2.5 Enable Logging
 
-To enable a more verbose output, you can print debug information using the ``--log`` option.
+For detailed insights into Pyghost's processing steps, you can activate debug logging using the ``--log`` option:
 
 ```bash
 python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. My wife's name is Jane Doe. Ireland is so beautiful this time of the year." --log DEBUG
@@ -161,26 +165,24 @@ python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for
 
 ### 2.6 Export Matches and Replacements
 
-It is possible to export the mapping table as a json file using the ``--export-matches`` option. This file will contain all matches and transformations.
+Pyghost allows you to export a JSON file containing details about all identified matches and their transformations. This can be helpful for auditing purposes or further analysis. Use the ``--export-matches`` option:
 
 ```bash
 python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. My wife's name is Jane Doe. Ireland is so beautiful this time of the year." --export-matches matches.json
 ```
 
-If you use the ``doc`` or ``s3`` command, the filename will automatically be manipulated so that it contains the original filename and page number.
+When using the ``doc`` or ``s3`` commands, the output filename for the exported JSON will be automatically generated based on the original filename and page number.
 
 ### 2.7 Loading a Custom Configuration
 
-You can also specify the location of a custom config file.
+Pyghost allows you to customize various settings through a configuration file. This provides flexibility to tailor the anonymization process to your specific needs.
 
 ```bash
 python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. My wife's name is Jane Doe. Ireland is so beautiful this time of the year." --config config.json
 ```
 
-If you do not specify a config file, the default configuration in ``config/default.json`` will be used. To create your own configuration, just copy the default configuration and edit it using any text editor. See the chapter on configuration for details.
+If no custom configuration file is specified, Pyghost will use the default settings located in [config/default.json](pyghost/config/default.json).
 
-
-
-## 3. Use pyghost as a Library
+## 3. Use Pyghost as a Library
 
 todo
