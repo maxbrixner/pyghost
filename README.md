@@ -143,7 +143,7 @@ Pyghost offers several pre-configured options:
 Pyghost allows you to control how matched text is replaced during anonymization/pseudonymization. You can achieve this by specifying a transformer using the ``--transformer`` option:
 
 ```bash
-python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. My wife's name is Jane Doe. Ireland is so beautiful this time of the year." --transformer Randomizer
+python -m pyghost text en "My name is John Doe, I was born in Dublin, I work for Allianz, and my email is john.doe@example.com. My wife's name is Jane Doe. Ireland is so beautiful this time of the year." --transformer FakerEN
 ```
 
 If no transformer is specified, Pyghost will use the first transformer defined in your [Configuration](pyghost/config/default.json).
@@ -153,7 +153,7 @@ Pyghost provides pre-configured transformers for various replacement strategies:
 |Name|Description|
 |-|-|
 |Label|Replaces each matched word with a label, like "person" for names.|
-|Randomizer|Generates random letters to replace matched words while preserving case sensitivity and specific characters (spaces, punctuation).|
+|FakerEN|Selects a random, fake name, location, or organization from predefined lists (english). For labels lacking predefined fakes, FakerEN generates random characters while maintaining original case and specific characters.|
 
 ### 2.5 Enable Logging
 

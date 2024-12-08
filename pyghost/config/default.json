@@ -196,17 +196,6 @@
             }
         },
         {
-            "name": "Randomizer",
-            "module": "pyghost.transformers",
-            "cls": "RandomizerTransformer",
-            "config": {
-                "alpha": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                "digit": "0123456789",
-                "preserve": "@ .,+-_()#\r\t\n",
-                "memory": true
-            }
-        },
-        {
             "name": "FakerEN",
             "module": "pyghost.transformers",
             "cls": "FakerTransformer",
@@ -217,9 +206,10 @@
                     "location": "pyghost/data/fake-location-en.txt",
                     "email": "pyghost/data/fake-email-en.txt"
                 },
-                "default": "*",
                 "min_candidates": 10,
-                "allow_length_diff": false,
+                "random_alpha": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "random_digit": "0123456789",
+                "random_preserve": "@ .,+-_()#\r\t\n",
                 "memory": true
             }
         }

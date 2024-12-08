@@ -25,9 +25,10 @@ class FakerTransformer(BaseTransformer):
         parameters.
         """
         files: dict[str, str] = {}
-        default: str = "*"
         min_candidates: int = 10
-        allow_length_diff: bool = False
+        random_alpha: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        random_digit: str = "0123456789"
+        random_preserve: str = "@ .,+-_()#\r\t\n"
         memory: bool = False
 
     fakes: dict[str, List[str]]
@@ -81,8 +82,11 @@ class FakerTransformer(BaseTransformer):
     def get_fake(self, label: str, text: str) -> str:
         self.load_file(label=label)
 
+        if label not in self.fakes:
+            return self.randomize_text(text=text)
+
         if len(self.fakes[label]) == 0:
-            return self.config.default
+            return self.randomize_text(text=text)
 
         candidates = []
         for candidate in self.fakes[label]:
@@ -90,9 +94,7 @@ class FakerTransformer(BaseTransformer):
                 candidates.append(candidate)
 
         if len(candidates) < self.config.min_candidates:
-            if not self.config.allow_length_diff:
-                return self.config.default
-            return random.choice(self.fakes[label])
+            return self.randomize_text(text=text)
 
         return random.choice(candidates)
 
@@ -112,5 +114,27 @@ class FakerTransformer(BaseTransformer):
 
         with filename.open("r") as file:
             self.fakes[label] = file.read().splitlines()
+
+    def randomize_text(self, text: str) -> str:
+        """
+        Randomize a string by replacing every character by a random character
+        from a given set.
+        """
+        result = ""
+        for char in text:
+            if char in self.config.random_preserve:
+                result += char
+                continue
+
+            if char.isdigit():
+                result += random.choice(self.config.random_digit)
+            else:
+                if char.islower():
+                    result += random.choice(self.config.random_alpha).lower()
+                else:
+                    result += random.choice(self.config.random_alpha).upper()
+                continue
+
+        return result
 
 # ---------------------------------------------------------------------------- #
