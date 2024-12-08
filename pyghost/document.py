@@ -198,6 +198,10 @@ class Document():
 
         font_size = max_font_size
         font_file = pathlib.Path(self._config.document.font)
+        if not font_file.is_file():
+            font_file = pathlib.Path(__file__).parent / \
+                pathlib.Path(self._config.document.font)
+
         font = ImageFont.truetype(font_file, font_size)
 
         while True:

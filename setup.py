@@ -15,6 +15,13 @@ dependencies = [
     "pytesseract"
 ]
 
+data_files = [("pyghost",  ["pyghost/config/default.json",
+                            "pyghost/data/fake-email-en.txt",
+                            "pyghost/data/fake-location-en.txt",
+                            "pyghost/data/fake-name-en.txt",
+                            "pyghost/data/fake-organization-en.txt",
+                            "pyghost/fonts/Roboto-Regular.ttf"])]
+
 setup(
     name=package_name,
     version=version,
@@ -23,4 +30,6 @@ setup(
     author_email=author_email,
     packages=find_packages(),
     install_requires=dependencies if dependencies else [],
+    include_package_data=True,
+    data_files=data_files
 )

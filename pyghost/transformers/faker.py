@@ -106,9 +106,10 @@ class FakerTransformer(BaseTransformer):
             self.fakes[label] = []
             return
 
-        # todo: check if file exists and manipulate path
-        # to point to this dir if not
         filename = pathlib.Path(self.config.files[label])
+        if not filename.is_file():
+            filename = pathlib.Path(__file__).parent / \
+                pathlib.Path(self.config.files[label])
 
         self.logger.debug(f"Loading faker file '{filename}'...")
 

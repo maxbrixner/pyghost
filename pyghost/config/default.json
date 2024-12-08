@@ -3,7 +3,7 @@
         "highlighter_color": "#000000",
         "text_color": "#ffffff",
         "max_font_size": 100,
-        "font": "pyghost/fonts/Roboto-Regular.ttf"
+        "font": "./fonts/Roboto-Regular.ttf"
     },
     "ocr": [
         {
@@ -201,10 +201,10 @@
             "cls": "FakerTransformer",
             "config": {
                 "files": {
-                    "person": "pyghost/data/fake-name-en.txt",
-                    "organization": "pyghost/data/fake-organization-en.txt",
-                    "location": "pyghost/data/fake-location-en.txt",
-                    "email": "pyghost/data/fake-email-en.txt"
+                    "person": "../data/fake-name-en.txt",
+                    "organization": "../data/fake-organization-en.txt",
+                    "location": "../data/fake-location-en.txt",
+                    "email": "../data/fake-email-en.txt"
                 },
                 "min_candidates": 10,
                 "random_alpha": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
