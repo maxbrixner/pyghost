@@ -29,11 +29,13 @@ class OcrConfig(pydantic.BaseModel):
     languages: List[str]
     config: dict[Any, Any] = {}
 
+
 class DocumentConfig(pydantic.BaseModel):
     highlighter_color: str
     text_color: str
     max_font_size: int
     font: str
+
 
 class Config(pydantic.BaseModel):
     document: DocumentConfig
@@ -59,16 +61,22 @@ class Word(pydantic.BaseModel):
 
     coordinates: Optional[Coordinates] = None
 
+
+class OcrResult(pydantic.BaseModel):
+    text: str
+    words: List[Word]
+
 # ---------------------------------------------------------------------------- #
 
 
 class Match(pydantic.BaseModel):
     label: str
+    matcher: str
     text: str
     start: int
     end: int
 
-    matcher: str
+    touched: List[Word] = []
 
     context: Optional[str] = None
     model_label: Optional[str] = None
@@ -79,15 +87,8 @@ class Match(pydantic.BaseModel):
 # ---------------------------------------------------------------------------- #
 
 
-class OcrResult(pydantic.BaseModel):
-    text: str
-    words: List[Word]
-
-# ---------------------------------------------------------------------------- #
-
-
 class Transformation(pydantic.BaseModel):
-    match: Match
+    word: Word
     replacement: str
 
 

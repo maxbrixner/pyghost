@@ -1,10 +1,16 @@
+# ---------------------------------------------------------------------------- #
+
 import pydantic
 import pytesseract
 from PIL import Image
 from typing import List
 
+# ---------------------------------------------------------------------------- #
+
 from ._base import BaseOcr
 from ..models import OcrResult, Word, Coordinates
+
+# ---------------------------------------------------------------------------- #
 
 
 class TesseractOcr(BaseOcr):
@@ -79,3 +85,5 @@ class TesseractOcr(BaseOcr):
         )
 
         return ocr
+
+# ---------------------------------------------------------------------------- #

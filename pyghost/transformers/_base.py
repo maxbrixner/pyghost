@@ -54,9 +54,11 @@ class BaseTransformer():
         Merge overlappig transformations, call create_transformations and apply
         them to the text. Only overwrite this in special cases.
         """
-        merged_matches = self.merge_overlapping_matches(matches)
+        # merged_matches = self.merge_overlapping_matches(matches)
 
         transformations = self.create_transformations(matches=matches)
+
+        print(transformations)
 
         transformed_text = self.apply_transformations(
             text=text,
@@ -78,7 +80,9 @@ class BaseTransformer():
         """
         Add a text belonging to a certain label to memory.
         """
-        self.memory[label] = {text: replacement}
+        if label not in self.memory:
+            self.memory[label] = {}
+        self.memory[label][text] = replacement
 
     def from_memory(self, label: str, text: str) -> str | None:
         """
@@ -194,18 +198,18 @@ class BaseTransformer():
         )
 
         for transformation in transformations:
-            if transformation.match.ignore:
-                continue
+            # if transformation.match.ignore:
+            #    continue
 
             self.logger.debug(f"Applying transformation to "
-                              f"'{transformation.match.text}'.")
+                              f"'{transformation.word.text}'.")
 
-            text_orig = transformation.match.text
-            start_orig = transformation.match.start
-            end_orig = transformation.match.end
+            text_orig = transformation.word.text
+            start_orig = transformation.word.start
+            end_orig = transformation.word.end
             len_orig = len(text_orig)
-            start_orig_tf = trafo_matrix[transformation.match.start]
-            end_orig_tf = trafo_matrix[transformation.match.end]
+            start_orig_tf = trafo_matrix[transformation.word.start]
+            end_orig_tf = trafo_matrix[transformation.word.end]
 
             text_new = transformation.replacement
             len_new = len(text_new)

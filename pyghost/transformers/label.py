@@ -47,6 +47,31 @@ class LabelTransformer(BaseTransformer):
         """
         transformations = []
         for match in matches:
+            for index, word in enumerate(match.touched):
+                replacement = self.from_memory(
+                    label=match.label, text=word.text)
+
+                if replacement is None:
+                    replacement = match.label
+                    self.add_to_memory(
+                        label=match.label,
+                        text=word.text,
+                        replacement=replacement
+                    )
+
+                transformations.append(
+                    Transformation(
+                        word=word,
+                        replacement=f"{self.config.prefix}"
+                        f"{replacement}"
+                        f"{self.config.suffix}"
+                    )
+                )
+
+        return transformations
+
+        transformations = []
+        for match in matches:
             if not self.config.memory:
                 replacement = match.label
             else:

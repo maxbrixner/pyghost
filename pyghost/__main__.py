@@ -12,6 +12,7 @@ from typing import Any, Optional, List
 # ---------------------------------------------------------------------------- #
 
 from .ghost import Ghost
+from .text import Text
 from .document import Document
 from .models import Config
 
@@ -107,13 +108,15 @@ def text(
     setup_logging(level=log)
     config = load_config(configfile=config)
 
+    words = Text().get_words(text=text)
+
     ghost = Ghost(
         language=language,
         config=config,
         transformer=transformer
     )
 
-    matches = ghost.find_matches(text=text)
+    matches = ghost.find_matches(text=text, words=words)
 
     result = ghost.transform_text(text=text, matches=matches)
 

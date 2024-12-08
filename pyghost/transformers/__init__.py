@@ -1,3 +1,3 @@
-from ._base import BaseTransformer, Transformation, TransformerResult
+from ._base import BaseTransformer
 from .label import LabelTransformer
 from .randomizer import RandomizerTransformer

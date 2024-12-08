@@ -9,9 +9,8 @@ import importlib
 from PIL import Image, ImageDraw, ImageFont
 from typing import Any, List, Optional
 
-from .models import Config, Coordinates
-from .ocr import BaseOcr, OcrResult
-from .transformers import TransformerResult
+from .models import Config, Coordinates, OcrResult, TransformerResult
+from .ocr import BaseOcr
 
 # ---------------------------------------------------------------------------- #
 
@@ -35,6 +34,9 @@ class Document():
         config: Config,
         ocr_provider: Optional[str] = None
     ):
+        """
+        Initialize the document.
+        """
         self.images = []
         self.ocr = []
 
@@ -46,6 +48,8 @@ class Document():
         ocr_provider = self._initialize_ocr(provider=ocr_provider)
 
     def get_text(self) -> List[str]:
+        """
+        """
         result = []
         for page, ocr in enumerate(self.ocr):
             result.append(
@@ -54,6 +58,9 @@ class Document():
         return result
 
     def load(self, filename: pathlib.Path) -> None:
+        """
+        Load a document from a file.
+        """
         if not filename.is_file():
             raise Exception(f"Cannot find file '{filename}'.")
 
@@ -69,6 +76,9 @@ class Document():
         self._retrieve_ocr()
 
     def _load_pdf(self, filename: pathlib.Path) -> None:
+        """
+        Load a PDF document.
+        """
         self.images = pdf2image.convert_from_path(filename)
         try:
             self.images = pdf2image.convert_from_path(filename)
@@ -77,6 +87,9 @@ class Document():
                             f"'{filename.suffix}' to an image.")
 
     def _load_image(self, filename: pathlib.Path) -> None:
+        """
+        Load an image document.
+        """
         try:
             image = Image.open(filename)
             self.images = [image]
@@ -85,6 +98,9 @@ class Document():
                             f"'{filename.suffix}'.")
 
     def _retrieve_ocr(self, provider: Optional[str] = None) -> OcrResult:
+        """
+        Call the OCR provider to retrieve the text of an image.
+        """
         self.ocr = []
 
         for page, image in enumerate(self.images):
@@ -96,8 +112,8 @@ class Document():
 
     def _initialize_ocr(self, provider: Optional[str] = None) -> None:
         """
-        Intitialize an ocr provider. The first active provider that fits
-        the language, will be used.
+        Intitialize an ocr provider. If no provider is passed, the first
+        provider that fits the language, will be used.
         """
         for ocr in self._config.ocr:
             if provider and provider == ocr.name:

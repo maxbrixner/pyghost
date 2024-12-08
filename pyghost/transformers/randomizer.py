@@ -46,29 +46,26 @@ class RandomizerTransformer(BaseTransformer):
         """
         transformations = []
         for match in matches:
-            if not self.config.memory:
-                replacement = self.randomize_text(match.text)
-            else:
-                memory = self.from_memory(label=match.label, text=match.text)
+            for word in match.touched:
+                replacement = self.from_memory(
+                    label=match.label, text=word.text)
 
-                if memory:
-                    self.logger.debug(
-                        f"Getting replacment for '{match.text}' from memory.")
-                    replacement = memory
-                else:
-                    replacement = self.randomize_text(match.text)
+                if replacement is None:
+                    replacement = self.randomize_text(word.text)
                     self.add_to_memory(
                         label=match.label,
-                        text=match.text,
+                        text=word.text,
                         replacement=replacement
                     )
 
-            transformations.append(
-                Transformation(
-                    match=match,
-                    replacement=replacement
+                transformations.append(
+                    Transformation(
+                        word=word,
+                        replacement=replacement
+                    )
                 )
-            )
+
+        print("mmmmmm", self.memory)
 
         return transformations
 
