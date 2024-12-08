@@ -171,20 +171,23 @@ def doc(
         for page, ocr in enumerate(document.ocr):
             matches = ghost.find_matches(text=ocr.text, words=ocr.words)
 
-            result = ghost.transform_text(
+            transformation = ghost.transform_text(
                 text=ocr.text, matches=matches, words=ocr.words)
 
             if export_matches:  # todo: gets overwritten when using multiple files
                 export_to_json(
-                    object=result,
+                    object=GhostResult(
+                        matches=matches,
+                        transformation=transformation
+                    ),
                     filename=export_matches.with_stem(
                         f"{export_matches.stem}_{filename.stem}_{page}"),
                 )
 
-            document.manipulate_page(page=page, transformer=result)
+            document.manipulate_page(page=page, transformer=transformation)
 
             if print_text:
-                print(result.transformed_text)
+                print(transformation.transformed_text)
 
         if output is None:
             document.save(

@@ -154,9 +154,8 @@ class Document():
         draw = ImageDraw.Draw(self.images[page])
 
         for transformation in transformer.transformations:
-            # todo
-            # if transformation.match.ignore:
-            #    continue
+            if not transformation.applied:
+                continue
 
             self.draw_rectangle(
                 draw=draw,

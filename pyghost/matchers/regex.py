@@ -87,7 +87,6 @@ class RegexMatcher(BaseMatcher):
                     matcher=self.name,
                     label=self.label,
                     text=text,
-                    context=match.group(0),
                     start=match.start(),
                     end=match.end()
                 )

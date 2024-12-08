@@ -78,11 +78,7 @@ class Match(pydantic.BaseModel):
 
     touched: List[Word] = []
 
-    context: Optional[str] = None
     model_label: Optional[str] = None
-    model_confidence: Optional[float] = None
-    ignore: bool = False
-    merged: bool = False
 
 # ---------------------------------------------------------------------------- #
 
