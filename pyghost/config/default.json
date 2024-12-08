@@ -207,15 +207,19 @@
             }
         },
         {
-            "name": "Faker",
+            "name": "FakerEN",
             "module": "pyghost.transformers",
             "cls": "FakerTransformer",
             "config": {
                 "files": {
-                    "person": "pyghost/data/fake-name.txt",
-                    "organization": "pyghost/data/fake-organization.txt",
-                    "location": "pyghost/data/fake-location.txt"
+                    "person": "pyghost/data/fake-name-en.txt",
+                    "organization": "pyghost/data/fake-organization-en.txt",
+                    "location": "pyghost/data/fake-location-en.txt",
+                    "email": "pyghost/data/fake-email-en.txt"
                 },
+                "default": "*",
+                "min_candidates": 10,
+                "allow_length_diff": false,
                 "memory": true
             }
         }
