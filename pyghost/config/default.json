@@ -203,7 +203,7 @@
                 "alpha": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
                 "digit": "0123456789",
                 "preserve": "@ .,+-_()#\r\t\n",
-                "memory": false
+                "memory": true
             }
         }
     ]
