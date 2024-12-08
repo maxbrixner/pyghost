@@ -202,9 +202,10 @@ class Document():
         font = ImageFont.truetype(font_file, font_size)
 
         while True:
-            textbox = draw.textbbox((0, 0), text, font=font)
-            if textbox[2] <= coordinates.width and \
-                    textbox[3] <= coordinates.height:
+            textbox = draw.textbbox(
+                (coordinates.left, coordinates.top), text, font=font)
+            if textbox[2] <= coordinates.left+coordinates.width and \
+                    textbox[3] <= coordinates.top+coordinates.height:
                 break
 
             if font_size == 1:
