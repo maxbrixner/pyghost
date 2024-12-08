@@ -70,24 +70,15 @@ class BaseTransformer():
         )
 
     def get_suffix(self, text: str) -> (str, str):
+        """
+        Return a text and it's suffix as a tuple, e.g. the text "John." will
+        be returned as ("John", ".").
+        """
         for suffix in [',', '.', '!', '?', ';']:
             if text.endswith(suffix):
                 return (text[:len(text)-1], suffix)
 
         return (text, "")
-
-    def clean_word(
-        self,
-        word: Word
-    ) -> None:
-        """
-
-        """
-        for suffix in [',', '.', '!', '?', ';']:
-            if word.text.endswith(suffix):
-                word.text = word.text[:len(word.text)-1]
-                word.end -= 1
-                break
 
     def add_to_memory(
         self,
@@ -112,7 +103,7 @@ class BaseTransformer():
 
         return None
 
-    def merge_overlapping_matches(self, matches: List[Match]) -> List[Match]:
+    def merge_overlapping_matches2(self, matches: List[Match]) -> List[Match]:
         """
         Merge overlapping matches.
         """
@@ -163,7 +154,7 @@ class BaseTransformer():
 
         return matches
 
-    def merge(self, match1: Match, match2: Match) -> Match:
+    def merge2(self, match1: Match, match2: Match) -> Match:
         """
         Merge two matches by combining their start end end positions and
         their text. Merged matches will have merged=True. If the two
@@ -195,6 +186,70 @@ class BaseTransformer():
             label=label,
             merged=True
         )
+
+    def apply_transformations2(
+        self,
+        text: str,
+        transformations: List[Transformation]
+    ) -> str:
+        """
+        Apply a list of transformations to a text. The mathematical function
+        that determines the new positions relative to the transformed text is
+        encoded in a transformation matrix.
+        """
+        # Interpretation of the transformation matrix: the keys are the
+        # positions of the letters in the original text. The values are the new
+        # positions of these letters now. A value of None means that the letter
+        # that was present at this specific position, does no longer exist
+        # (i.e. has been removed or been replaced)
+        trafo_matrix: dict[int, int | None] = dict(
+            zip(range(0, len(text)+1), range(0, len(text)+1))
+        )
+
+        for transformation in transformations:
+            # if transformation.match.ignore:
+            #    continue
+
+            self.logger.debug(f"Applying transformation to "
+                              f"'{transformation.word.text}'.")
+
+            text_orig = transformation.word.text
+            start_orig = transformation.word.start
+            end_orig = transformation.word.end
+            len_orig = len(text_orig)
+            start_orig_tf = trafo_matrix[transformation.word.start]
+            end_orig_tf = trafo_matrix[transformation.word.end]
+
+            text_new = transformation.replacement
+            len_new = len(text_new)
+
+            # if any of the letters of the original text have been already
+            # replaced, the transformation cannot be applied.
+            for pos in range(start_orig, end_orig):
+                if trafo_matrix[pos] is None:
+                    raise Exception(f"Match positions are not disjoint. The "
+                                    f"transformation of '{text_orig}' "
+                                    f"at {pos} "
+                                    f"could not be applied.")
+
+            # replace the text
+            left = text[0:start_orig_tf]
+            right = text[end_orig_tf:]
+            text = left + text_new + right
+
+            # Update the transformation matrix, i.e. replace any position with
+            # a replaced letter with None and move letters after the
+            # replacement by the difference of length between the new and old
+            # text
+            for pos_orig, pos_new in trafo_matrix.items():
+                if pos_orig >= start_orig and pos_orig < end_orig:
+                    trafo_matrix[pos_orig] = None
+
+                if pos_orig >= end_orig:
+                    if trafo_matrix[pos_orig] is not None:
+                        trafo_matrix[pos_orig] += (len_new - len_orig)
+
+        return text
 
     def apply_transformations(
         self,
@@ -260,7 +315,7 @@ class BaseTransformer():
 
         return text
 
-    def debug_print(self, trafo_matrix, old_text, text):
+    def debug_print2(self, trafo_matrix, old_text, text):
         keys = list(trafo_matrix.keys())
         values = list(trafo_matrix.values())
         for i in range(len(old_text)):
