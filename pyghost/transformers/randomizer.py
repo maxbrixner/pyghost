@@ -75,15 +75,14 @@ class RandomizerTransformer(BaseTransformer):
                 result += char
                 continue
 
-            if char.isalpha():
+            if char.isdigit():
+                result += random.choice(self.config.digit)
+            else:
                 if char.islower():
                     result += random.choice(self.config.alpha).lower()
                 else:
                     result += random.choice(self.config.alpha).upper()
                 continue
-
-            if char.isdigit():
-                result += random.choice(self.config.digit)
 
         return result
 

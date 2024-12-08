@@ -79,13 +79,10 @@ def load_config(
 def export_to_json(
     object: pydantic.BaseModel,
     filename: pathlib.Path,
-    suffix: Optional[str] = None
 ) -> None:
     """
     Save a pydantic model to a json file.
     """
-    if suffix:
-        filename = filename.with_stem(f"{filename.stem}{suffix}")
     with filename.open("w", encoding="utf-8") as file:
         content = object.model_dump()
         json.dump(content, file, indent=4)
@@ -97,10 +94,10 @@ def export_to_json(
 def text(
     language: str,
     text: str,
+    transformer: Optional[str] = None,
     log: LogLevel = LogLevel.INFO,
     config: Optional[pathlib.Path] = None,
-    export: Optional[pathlib.Path] = None,
-    transformer: Optional[str] = None
+    export_matches: Optional[pathlib.Path] = None,
 ) -> None:
     """
     Pseudonymize or anonymize a text.
@@ -120,13 +117,13 @@ def text(
 
     transformation = ghost.transform_text(text=text, matches=matches)
 
-    if export:
+    if export_matches:
         export_to_json(
             object=GhostResult(
                 matches=matches,
                 transformation=transformation
             ),
-            filename=export
+            filename=export_matches
         )
 
     print(transformation.transformed_text)
@@ -138,11 +135,13 @@ def text(
 def doc(
     language: str,
     documents: List[pathlib.Path],
+    output: Optional[pathlib.Path] = None,
+    ocr: Optional[str] = None,
+    transformer: Optional[str] = None,
     log: LogLevel = LogLevel.INFO,
     config: Optional[pathlib.Path] = None,
-    export: Optional[pathlib.Path] = None,
-    ocr: Optional[str] = None,
-    transformer: Optional[str] = None
+    export_matches: Optional[pathlib.Path] = None,
+    print_text: bool = False
 ) -> None:
     """
     Process a local document (pdf, jpg, png, or tiff).
@@ -156,30 +155,45 @@ def doc(
         transformer=transformer
     )
 
-    doc = Document(
+    document = Document(
         language=language,
         config=config,
         ocr_provider=ocr
     )
 
-    for document in documents:
-        doc.load(document)
+    # todo: deal with folders
+    # todo: accept other output folders
 
-        for page, ocr in enumerate(doc.ocr):
+    for filename in documents:
+        document.load(filename=filename)
+
+        for page, ocr in enumerate(document.ocr):
             matches = ghost.find_matches(text=ocr.text, words=ocr.words)
 
             result = ghost.transform_text(text=ocr.text, matches=matches)
 
-            if export:  # todo: gets overwritten when using multiple files
+            if export_matches:  # todo: gets overwritten when using multiple files
                 export_to_json(
                     object=result,
-                    filename=export,
-                    suffix=str(page)
+                    filename=export_matches.with_stem(
+                        f"{export_matches.stem}_{filename.stem}_{page}"),
                 )
 
-            doc.manipulate_page(page=page, transformer=result)
+            document.manipulate_page(page=page, transformer=result)
 
-            print(f"{document} page {page}\n{result.transformed_text}")
+            if print_text:
+                print(result.transformed_text)
+
+        if output is None:
+            document.save(
+                filename=filename.with_stem(
+                    f"out_{filename.stem}").with_suffix(".jpg")
+            )
+        else:
+            document.save(
+                filename=output.with_stem(
+                    f"{output.stem}_{filename.stem}")
+            )
 
 # ---------------------------------------------------------------------------- #
 

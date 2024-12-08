@@ -87,6 +87,16 @@ class Document():
             raise Exception(f"Unable to open image file "
                             f"'{filename.suffix}'.")
 
+    def save(
+        self,
+        filename: pathlib.Path
+    ) -> None:
+        for page, image in enumerate(self.images):
+            filename_mod = filename.with_stem(
+                f"{filename.stem}_{page}")
+            with filename_mod.open("w", encoding="utf-8") as file:
+                image.save(file)
+
     def _retrieve_ocr(self, provider: Optional[str] = None) -> OcrResult:
         """
         Call the OCR provider to retrieve the text of an image.
@@ -120,7 +130,7 @@ class Document():
                 continue
 
             if not provider:
-                self._logger.warning(
+                self._logger.info(
                     f"No OCR provider specified, defaulting to '{ocr.name}'."
                 )
 
@@ -159,9 +169,6 @@ class Document():
                 color=self._config.document.text_color,
                 max_font_size=self._config.document.max_font_size
             )
-
-        # todo
-        self.images[page].save(f"output{page}.jpg")
 
     def draw_rectangle(
         self,

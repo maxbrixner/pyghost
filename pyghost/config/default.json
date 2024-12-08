@@ -7,7 +7,7 @@
     },
     "ocr": [
         {
-            "name": "tesseractEN",
+            "name": "TesseractEN",
             "module": "pyghost.ocr",
             "cls": "TesseractOcr",
             "languages": [
@@ -18,7 +18,7 @@
             }
         },
         {
-            "name": "tesseractDE",
+            "name": "TesseractDE",
             "module": "pyghost.ocr",
             "cls": "TesseractOcr",
             "languages": [

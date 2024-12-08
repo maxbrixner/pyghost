@@ -145,7 +145,7 @@ class Ghost():
                 return
 
             if not provider:
-                self.logger.warning(
+                self.logger.info(
                     f"No transformer provider specified, defaulting to "
                     f"'{transformer.name}'."
                 )
