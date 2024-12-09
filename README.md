@@ -129,8 +129,6 @@ The processed document will be saved in the same directory as the input file. Th
 python -m pyghost doc en test/document1EN.pdf --output test/output.jpg
 ```
 
-The output filename for the exported images will be automatically generated based on the original filename and page number.
-
 ### 2.3 The "s3" Command
 
 todo
