@@ -112,7 +112,7 @@ def text(
         transformer=transformer
     )
 
-    transformation = ghost.process_text(
+    matches, transformation = ghost.process_text(
         text=text, words=words)
 
     if export_matches:
@@ -162,7 +162,7 @@ def doc(
         document.load(filename=filename)
 
         for page, doc_ocr in enumerate(document.ocr):
-            transformation = ghost.process_text(
+            matches, transformation = ghost.process_text(
                 text=doc_ocr.text, words=doc_ocr.words)
 
             if export_matches:
@@ -175,7 +175,10 @@ def doc(
                         f"{export_matches.stem}_{filename.stem}_{page}"),
                 )
 
-            document.manipulate_page(page=page, transformer=transformation)
+            document.add_transformations_to_page(
+                page=page,
+                transformations=transformation
+            )
 
         if output is None:
             document.save(

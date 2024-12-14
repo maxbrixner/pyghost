@@ -2,7 +2,7 @@
 
 import logging
 import importlib
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 # ---------------------------------------------------------------------------- #
 
@@ -47,18 +47,18 @@ class Ghost():
         self,
         text: str,
         words: List[Word]
-    ) -> TransformerResult:
+    ) -> Tuple[List[Match], TransformerResult]:
         """
         Process a text by using the matchers to find sensitive information and
         the transformers to replace it.
         """
-        matches = self.find_matches(text=text, words=words)
-        transformation = self.transform_text(
+        matches = self._find_matches(text=text, words=words)
+        transformation = self._transform_text(
             text=text, matches=matches, words=words)
 
-        return transformation
+        return (matches, transformation)
 
-    def find_matches(
+    def _find_matches(
         self,
         text: str,
         words: List[Word]
@@ -78,7 +78,7 @@ class Ghost():
 
         return matches
 
-    def transform_text(
+    def _transform_text(
         self,
         text: str,
         matches: List[Match],
