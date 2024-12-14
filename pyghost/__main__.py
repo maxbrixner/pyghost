@@ -36,9 +36,8 @@ class LogLevel(str, enum.Enum):
 
 def setup_logging(level: LogLevel) -> None:
     """
-    Setup the logger for pyghost.
+    Set up the logger for pyghost.
     """
-
     formatter = logging.Formatter("%(levelname)-10s %(message)s")
 
     handler = logging.StreamHandler()
@@ -58,11 +57,11 @@ def load_config(
     """
     Load the configuration from a config file.
     """
-    if not configfile:
-        configfile = pathlib.Path(__file__).parent / \
-            pathlib.Path("./config/default.json")
-
     try:
+        if not configfile:
+            configfile = pathlib.Path(__file__).parent / \
+                pathlib.Path("./config/default.json")
+
         with configfile.open("r", encoding="utf-8") as file:
             content = json.load(file)
 
@@ -113,10 +112,8 @@ def text(
         transformer=transformer
     )
 
-    matches = ghost.find_matches(text=text, words=words)
-
-    transformation = ghost.transform_text(
-        text=text, matches=matches, words=words)
+    transformation = ghost.process_text(
+        text=text, words=words)
 
     if export_matches:
         export_to_json(
@@ -141,11 +138,10 @@ def doc(
     transformer: Optional[str] = None,
     log: LogLevel = LogLevel.INFO,
     config: Optional[pathlib.Path] = None,
-    export_matches: Optional[pathlib.Path] = None,
-    print_text: bool = False
+    export_matches: Optional[pathlib.Path] = None
 ) -> None:
     """
-    Process a local document (pdf, jpg, png, or tiff).
+    Pseudonymize or anonymize local documents (pdf, jpg, png, or tiff).
     """
     setup_logging(level=log)
     configuration = load_config(configfile=config)
@@ -162,20 +158,14 @@ def doc(
         ocr_provider=ocr
     )
 
-    # todo: deal with folders
-    # todo: accept other output folders
-
     for filename in documents:
         document.load(filename=filename)
 
         for page, doc_ocr in enumerate(document.ocr):
-            matches = ghost.find_matches(
+            transformation = ghost.process_text(
                 text=doc_ocr.text, words=doc_ocr.words)
 
-            transformation = ghost.transform_text(
-                text=doc_ocr.text, matches=matches, words=doc_ocr.words)
-
-            if export_matches:  # todo: gets overwritten when using multiple files
+            if export_matches:
                 export_to_json(
                     object=GhostResult(
                         matches=matches,
@@ -186,9 +176,6 @@ def doc(
                 )
 
             document.manipulate_page(page=page, transformer=transformation)
-
-            if print_text:
-                print(transformation.transformed_text)
 
         if output is None:
             document.save(
@@ -212,12 +199,17 @@ def s3(
     Process an AWS S3 document or folder (pdf, jpg, png, or tiff).
     """
     setup_logging(level=log)
+    configuration = load_config(configfile=config)
+
     pass  # todo
 
 
 # ---------------------------------------------------------------------------- #
 
 if __name__ == "__main__":
+    """
+    Run typer commands.
+    """
     command = typer.main.get_command(app)
 
     try:

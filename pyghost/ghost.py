@@ -1,7 +1,5 @@
 # ---------------------------------------------------------------------------- #
 
-import pathlib
-import json
 import logging
 import importlib
 from typing import List, Optional
@@ -40,12 +38,25 @@ class Ghost():
         self.config = config
         self.logger = logging.getLogger("pyghost.ghost")
 
-        self.matchers = {}
-
         self.language = language
 
-        self.initialize_matchers()
-        self.initialize_transformer(provider=transformer)
+        self._initialize_matchers()
+        self._initialize_transformer(provider=transformer)
+
+    def process_text(
+        self,
+        text: str,
+        words: List[Word]
+    ) -> TransformerResult:
+        """
+        Process a text by using the matchers to find sensitive information and
+        the transformers to replace it.
+        """
+        matches = self.find_matches(text=text, words=words)
+        transformation = self.transform_text(
+            text=text, matches=matches, words=words)
+
+        return transformation
 
     def find_matches(
         self,
@@ -57,18 +68,31 @@ class Ghost():
         """
         matches = []
         for name, matcher in self.matchers.items():
-            self.logger.debug(f"Processing matcher '{name}'.")
-
             new_matches = matcher.process(text=text)
             matches += new_matches
 
-            self.logger.debug(f"Found {len(new_matches)} matches.")
+            self.logger.debug(
+                f"Matcher '{name}' found {len(new_matches)} matches.")
 
-        self.get_touched_words(matches=matches, words=words)
+        self._get_touched_words(matches=matches, words=words)
 
         return matches
 
-    def get_touched_words(
+    def transform_text(
+        self,
+        text: str,
+        matches: List[Match],
+        words: List[Word]
+    ) -> TransformerResult:
+        """
+        Call the transformer to replace matches with dummy data.
+        """
+        result = self.transformer.process(
+            text=text, matches=matches, words=words)
+
+        return result
+
+    def _get_touched_words(
         self,
         matches: List[Match],
         words: List[Word]
@@ -88,28 +112,17 @@ class Ghost():
 
                 match.touched.append(word.copy())
 
-            self.logger.debug(f"Found {len(match.touched)} touched words for "
-                              f"match '{match.text}'")
+            self.logger.debug(f"Match '{match.text}' @ {match.start} touched "
+                              f"'{len(match.touched)}' words.")
 
-    def transform_text(
-        self,
-        text: str,
-        matches: List[Match],
-        words: List[Word]
-    ) -> TransformerResult:
-        """
-        Call the transformer to #todo
-        """
-        result = self.transformer.process(
-            text=text, matches=matches, words=words)
-
-        return result
-
-    def initialize_matchers(self) -> None:
+    def _initialize_matchers(self) -> None:
         """
         Intitialize all active matchers once. 
         """
         self.matchers = {}
+
+        self.logger.debug(
+            f"Initializing matchers for language '{self.language}'.")
 
         for matcher in self.config.matchers:
             if matcher.name in self.matchers:
@@ -130,9 +143,9 @@ class Ghost():
                 label=matcher.label,
                 config=matcher.config)
 
-    def initialize_transformer(self, provider: Optional[str] = None) -> None:
+    def _initialize_transformer(self, provider: Optional[str] = None) -> None:
         """
-        Intitialize a transformer. If no provider is passed, the first
+        Intitialize the transformer. If no provider is passed, the first
         transformer found will be used.
         """
         for transformer in self.config.transformers:
