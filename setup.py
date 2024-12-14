@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+import setuptools
 
 package_name = "pyghost"
 version = "0.1.0"
@@ -22,13 +22,13 @@ data_files = [("pyghost",  ["pyghost/config/default.json",
                             "pyghost/data/fake-organization-en.txt",
                             "pyghost/fonts/Roboto-Regular.ttf"])]
 
-setup(
+setuptools.setup(
     name=package_name,
     version=version,
     description=description,
     author=author,
     author_email=author_email,
-    packages=find_packages(),
+    packages=setuptools.find_packages(),
     install_requires=dependencies if dependencies else [],
     include_package_data=True,
     data_files=data_files

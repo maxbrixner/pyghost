@@ -10,15 +10,15 @@ from .models import Word
 
 
 class Text():
+    """
+    The text class offers a way to convert a string of text into a list of
+    words.
+    """
 
     def get_words(self, text: str) -> List[Word]:
-        # todo
-        # text = text.replace(".", " ")
-        # text = text.replace(",", " ")
-        # text = text.replace(";", " ")
-        # text = text.replace("?", " ")
-        # text = text.replace("!", " ")
-
+        """
+        Convert a string of text into a list of words.
+        """
         words = text.split(" ")
         result = []
         start = 0
